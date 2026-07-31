@@ -104,9 +104,10 @@
   .callout{background:var(--surface-2);border:1px solid var(--line);border-inline-start:4px solid var(--effort);border-radius:10px;padding:14px 16px;font-size:14.5px;color:var(--muted);line-height:1.7}
   .callout.ride{border-inline-start-color:var(--ride)}
   .callout b{color:var(--ink)}
-  .callout ol.steps{margin:10px 0 0;padding-inline-start:22px}
-  .callout ol.steps>li{margin-bottom:10px}
-  .callout ol.steps>li:last-child{margin-bottom:0}
+  .callout ol.logsteps{margin:10px 0 0;padding-inline-start:26px;list-style:decimal}
+  .callout ol.logsteps>li{margin-bottom:12px;padding-inline-start:4px}
+  .callout ol.logsteps>li::marker{color:var(--effort);font-weight:700}
+  .callout ol.logsteps>li:last-child{margin-bottom:0}
   .callout .ex{display:block;margin-top:4px;font-size:13.5px;color:var(--faint)}
 
   /* read-the-table helper */
@@ -317,7 +318,7 @@
 
   <div class="callout" style="margin-bottom:14px;border-inline-start-color:var(--recover)">
     <b>كيف تسجّل أرقامك</b>
-    <ol class="steps">
+    <ol class="logsteps">
       <li>تحت كل تمرين في <b>خانتين</b>: وحدة للوزن (<b>كغ</b>) ووحدة للعدّات. اكتب فيهم على التلفون وأنت بالنادي.
         <span class="ex">ما في زر حفظ — أول ما تكتب رقم بينحفظ لحاله.</span></li>
       <li>بخانة <b>العدّات</b> اكتب كل جولة لحالها وبينهم فاصلة.
