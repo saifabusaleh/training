@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>برنامجك الرياضي الأسبوعي</title>
+<style>
+  :root{
+    --bg:#f4f3f0; --surface:#ffffff; --surface-2:#faf9f6;
+    --ink:#20242b; --muted:#565d68; --faint:#818893; --line:#e4e2dc;
+    --effort:#c1531c; --effort-soft:#f7e9df;
+    --recover:#2c7f72; --recover-soft:#e2efeb;
+    --ride:#31659f; --ride-soft:#e3ecf5;
+    --shadow:0 1px 2px rgba(20,24,31,.04),0 6px 20px rgba(20,24,31,.06);
+    --r:16px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#14161a; --surface:#1c1f25; --surface-2:#22262d;
+      --ink:#eceef1; --muted:#aeb5bf; --faint:#7c838f; --line:#2c3037;
+      --effort:#ef8a4f; --effort-soft:#3a2519;
+      --recover:#5cc0af; --recover-soft:#17322d;
+      --ride:#77a6da; --ride-soft:#17293c;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1c1f25; --surface-2:#22262d;
+    --ink:#eceef1; --muted:#aeb5bf; --faint:#7c838f; --line:#2c3037;
+    --effort:#ef8a4f; --effort-soft:#3a2519;
+    --recover:#5cc0af; --recover-soft:#17322d;
+    --ride:#77a6da; --ride-soft:#17293c;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --bg:#f4f3f0; --surface:#ffffff; --surface-2:#faf9f6;
+    --ink:#20242b; --muted:#565d68; --faint:#818893; --line:#e4e2dc;
+    --effort:#c1531c; --effort-soft:#f7e9df;
+    --recover:#2c7f72; --recover-soft:#e2efeb;
+    --ride:#31659f; --ride-soft:#e3ecf5;
+    --shadow:0 1px 2px rgba(20,24,31,.04),0 6px 20px rgba(20,24,31,.06);
+  }
+  *{box-sizing:border-box;min-width:0}
+  html,body{max-width:100%;overflow-x:hidden;margin:0;background:var(--bg);color:var(--ink);direction:rtl}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Arabic","Geeza Pro","Helvetica Neue",Arial,sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    direction:rtl; text-align:right;
+    max-width:900px; margin:0 auto; padding:clamp(16px,4vw,40px);
+    overflow-x:hidden;
+  }
+  h1,h2,h3,p,ul,ol{margin:0}
+  ul,ol{padding:0;list-style:none}
+  p,li{overflow-wrap:break-word}
+  .num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+
+  /* theme toggle */
+  .tt{position:fixed;inset-block-start:12px;inset-inline-end:12px;z-index:9;background:var(--surface);border:1px solid var(--line);
+     color:var(--muted);border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;cursor:pointer;box-shadow:var(--shadow)}
+  .tt:hover{color:var(--ink)}
+  .tt:focus-visible{outline:2px solid var(--effort);outline-offset:2px}
+
+  /* header */
+  .head{margin-bottom:26px}
+  .kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--effort);font-weight:700;margin-bottom:12px}
+  .head h1{font-size:clamp(28px,5.5vw,40px);font-weight:800;letter-spacing:-.01em;line-height:1.2;text-wrap:balance;margin-bottom:14px}
+  .head .lede{color:var(--muted);font-size:clamp(16px,2.2vw,18px);max-width:58ch}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .meta .m{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:13.5px;color:var(--muted);box-shadow:var(--shadow)}
+  .meta .m b{color:var(--ink);font-weight:700}
+
+  .sec-title{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:38px 0 16px;display:flex;align-items:center;gap:12px}
+  .sec-title::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* how to use */
+  .howto{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px 22px}
+  .howto h3{font-size:17px;font-weight:800;margin-bottom:14px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:640px){.steps{grid-template-columns:1fr}}
+  .step{display:flex;gap:12px;align-items:flex-start}
+  .step .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--effort-soft);color:var(--effort);font-weight:800;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;font-size:15px}
+  .step p{font-size:14.5px;color:var(--muted)}
+  .step p b{color:var(--ink);font-weight:700;display:block;margin-bottom:2px}
+
+  /* week strip */
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  @media (max-width:680px){.week{grid-template-columns:repeat(2,1fr)}}
+  .day{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 11px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .day::before{content:"";position:absolute;inset-block-start:0;inset-inline-start:0;inset-inline-end:0;height:4px;background:var(--faint)}
+  .day.e::before{background:var(--effort)} .day.r::before{background:var(--recover)} .day.c::before{background:var(--ride)}
+  .day .dow{font-size:13px;color:var(--ink);font-weight:800;margin-bottom:6px}
+  .day .dfoc{font-size:13.5px;color:var(--muted);line-height:1.4}
+  .day .dtag{font-size:11.5px;margin-top:9px;font-weight:700;padding:3px 9px;border-radius:999px;display:inline-block}
+  .day.e .dtag{background:var(--effort-soft);color:var(--effort)}
+  .day.r .dtag{background:var(--recover-soft);color:var(--recover)}
+  .day.c .dtag{background:var(--ride-soft);color:var(--ride)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;font-size:13.5px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .legend i{width:12px;height:12px;border-radius:4px;display:inline-block}
+
+  .callout{background:var(--surface-2);border:1px solid var(--line);border-inline-start:4px solid var(--effort);border-radius:10px;padding:14px 16px;font-size:14.5px;color:var(--muted);line-height:1.7}
+  .callout.ride{border-inline-start-color:var(--ride)}
+  .callout b{color:var(--ink)}
+
+  /* read-the-table helper */
+  .reader{display:flex;gap:16px;align-items:center;background:var(--effort-soft);border-radius:12px;padding:14px 18px;flex-wrap:wrap}
+  .reader .big{font-variant-numeric:tabular-nums;direction:ltr;font-size:26px;font-weight:800;color:var(--effort);white-space:nowrap}
+  .reader .exp{font-size:14.5px;color:var(--ink)}
+  .reader .exp b{color:var(--effort)}
+
+  /* session cards */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+  .card .top{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .card.e .top{border-top:5px solid var(--effort)}
+  .card.c .top{border-top:5px solid var(--ride)}
+  .card .top .when{font-size:13.5px;color:#fff;font-weight:800;background:var(--effort);padding:4px 12px;border-radius:999px}
+  .card.c .top .when{background:var(--ride)}
+  .card .top h3{font-size:19px;font-weight:800;letter-spacing:-.01em}
+  .card .top .dur{margin-inline-start:auto;font-size:13px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);padding:4px 12px;border-radius:999px}
+  .ex{padding:6px 20px 16px}
+  .ex li{display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ex li:last-child{border-bottom:0}
+  .ex .name{font-weight:700;font-size:15.5px}
+  .ex .name small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:4px;line-height:1.5}
+  /* اسم التمرين بالإنجليزي — هذا اللي بتشوفه على أجهزة النادي */
+  .t{display:block;direction:ltr;unicode-bidi:isolate;text-align:left;
+     font-size:16.5px;font-weight:800;letter-spacing:-.005em;color:var(--ink)}
+  .en{display:block;direction:ltr;unicode-bidi:isolate;text-align:left;
+      font-size:13px;font-weight:700;letter-spacing:.01em;color:var(--effort);margin-top:3px}
+  .panel .en,.why .en{color:var(--recover);font-size:12.5px;margin-top:2px}
+  .ex .sets{font-variant-numeric:tabular-nums;font-weight:800;font-size:16px;color:var(--effort);white-space:nowrap;direction:ltr;text-align:left}
+  .card.c .ex .sets{color:var(--ride)}
+  .learn{display:inline-block;direction:rtl;font-size:11px;font-weight:800;letter-spacing:0;
+         background:var(--recover-soft);color:var(--recover);padding:2px 8px;border-radius:999px;margin-inline-start:8px;vertical-align:middle}
+  .ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+
+  /* خطة تعلّم الـ RDL */
+  .plan{margin:0 20px 20px;background:var(--surface-2);border:1px solid var(--line);
+        border-inline-start:4px solid var(--recover);border-radius:12px;padding:18px 20px}
+  .plan h4{font-size:16.5px;font-weight:800;margin:0 0 8px;color:var(--ink)}
+  .plan .lead{font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 16px}
+  .stages{display:flex;flex-direction:column;gap:16px;list-style:none;padding:0;margin:0;counter-reset:none}
+  .stages > li{display:flex;gap:13px;align-items:flex-start}
+  .stages .sn{flex:none;width:28px;height:28px;border-radius:50%;background:var(--recover);color:#fff;
+              font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;
+              display:flex;align-items:center;justify-content:center;margin-top:2px}
+  .stages > li > div{flex:1}
+  .stages b{display:block;font-size:14.5px;font-weight:800;color:var(--ink);margin-bottom:6px}
+  .stages b .ltr{font-weight:800}
+  .stages p{font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 6px}
+  .stages p:last-child{margin-bottom:0}
+  .stages p b{display:inline;font-size:inherit;color:var(--ink);margin:0}
+  .stages .tiny{font-size:12.5px;color:var(--faint)}
+
+  /* habit / principle grid */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:640px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px}
+  .panel h3{font-size:17px;font-weight:800;margin-bottom:4px}
+  .panel .sub{font-size:13.5px;color:var(--faint);margin-bottom:14px}
+  .panel ul li{display:flex;gap:11px;padding:9px 0;font-size:14.5px;border-bottom:1px solid var(--line);align-items:flex-start}
+  .panel ul li:last-child{border-bottom:0}
+  .panel ul li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--recover);margin-top:9px}
+  .panel .t{font-size:15px}
+  .panel small{display:block;color:var(--muted);font-size:13px;margin-top:3px;line-height:1.55}
+  .panel.warm ul li::before{background:var(--effort)}
+
+  .why{background:linear-gradient(180deg,var(--effort-soft),transparent);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px;margin-top:8px}
+  .why h3{font-size:17px;font-weight:800;margin-bottom:12px}
+  .why ul{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px}
+  @media (max-width:640px){.why ul{grid-template-columns:1fr}}
+  .why li{font-size:14.5px;color:var(--muted);display:flex;gap:9px;align-items:flex-start}
+  .why li b{color:var(--ink);font-weight:700}
+  .why li::before{content:"→";color:var(--effort);font-weight:800;flex:none}
+
+  .foot{margin-top:30px;padding:18px 20px;border-radius:var(--r);background:var(--surface-2);border:1px solid var(--line);font-size:14px;color:var(--muted);line-height:1.75}
+  .foot b{color:var(--ink)}
+
+  /* ===== سجل الأوزان والعدّات ===== */
+  .log{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:11px}
+  .log .prev{font:inherit;font-size:12.5px;font-weight:700;line-height:1.4;direction:rtl;text-align:right;
+             color:var(--recover);background:var(--recover-soft);border:1px solid transparent;
+             border-radius:9px;padding:9px 12px;min-height:40px;cursor:pointer}
+  .log .prev:hover{border-color:var(--recover)}
+  .log .prev:focus-visible{outline:2px solid var(--recover);outline-offset:2px}
+  .log .prev.none{color:var(--faint);background:var(--surface-2);border-color:var(--line);cursor:default}
+  .log .prev.none:hover{border-color:var(--line)}
+  .log .v{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block;
+          font-weight:800;color:var(--ink)}
+  .log .f{display:flex;align-items:center;gap:7px;background:var(--surface-2);
+          border:1px solid var(--line);border-radius:9px;padding:0 11px;min-height:42px}
+  .log .f:focus-within{border-color:var(--effort);box-shadow:0 0 0 3px var(--effort-soft)}
+  .log .f > span{font-size:12px;color:var(--faint);font-weight:700;white-space:nowrap}
+  .log input{border:0;background:transparent;color:var(--ink);font:inherit;font-size:15.5px;font-weight:800;
+             padding:9px 0;width:72px;min-width:0;direction:ltr;text-align:left;
+             font-variant-numeric:tabular-nums;border-radius:4px}
+  .log input::placeholder{color:var(--faint);font-weight:400}
+  .log input:focus{outline:none}
+  .log input.r{width:118px}
+
+  .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
+  .tools button{font:inherit;font-size:13px;font-weight:700;color:var(--muted);background:var(--surface);
+                border:1px solid var(--line);border-radius:9px;padding:9px 14px;cursor:pointer;min-height:40px}
+  .tools button:hover{color:var(--ink);border-color:var(--faint)}
+  .tools button:focus-visible{outline:2px solid var(--effort);outline-offset:2px}
+  .tools .fbtn{font:inherit;font-size:13px;font-weight:700;color:var(--muted);background:var(--surface);
+               border:1px solid var(--line);border-radius:9px;padding:9px 14px;cursor:pointer;
+               min-height:40px;display:inline-flex;align-items:center}
+  .tools .fbtn:hover{color:var(--ink);border-color:var(--faint)}
+  .tools input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+  .tools input[type="file"]:focus-visible + .fbtn,.tools .fbtn:focus-within{outline:2px solid var(--effort);outline-offset:2px}
+  .tools .st{font-size:13px;font-weight:700;color:var(--recover);min-height:20px}
+  .tools .info{font-size:12.5px;color:var(--faint);font-weight:400;flex-basis:100%;line-height:1.6}
+  .tools textarea{display:none;width:100%;min-height:80px;font:inherit;font-size:12px;direction:ltr;
+                  text-align:left;background:var(--surface-2);color:var(--ink);
+                  border:1px solid var(--line);border-radius:9px;padding:10px}
+
+  .hist{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+        box-shadow:var(--shadow);margin-top:26px;overflow:hidden}
+  .hist summary{cursor:pointer;font-size:15.5px;font-weight:800;padding:16px 20px;color:var(--ink)}
+  .hist summary:focus-visible{outline:2px solid var(--effort);outline-offset:-2px}
+  .scroll{overflow-x:auto}
+  .hist table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .hist th,.hist td{padding:9px 20px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+  .hist thead th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .hist tbody tr:nth-child(even):not(.dr){background:color-mix(in srgb,var(--ink) 3%,transparent)}
+  .hist tr.dr th{background:var(--effort-soft);color:var(--effort);font-weight:800;font-size:13.5px;
+                 font-variant-numeric:tabular-nums;text-transform:none;letter-spacing:0}
+  .hswitch{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 14px}
+  .hswitch button{font:inherit;font-size:12.5px;font-weight:700;color:var(--muted);background:var(--surface-2);
+                  border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:38px}
+  .hswitch button:hover{color:var(--ink)}
+  .hswitch button.on{background:var(--effort);border-color:var(--effort);color:#fff}
+  .hswitch button:focus-visible{outline:2px solid var(--effort);outline-offset:2px}
+  .hist tr.er th{background:var(--recover-soft);color:var(--recover);
+                 display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+  .hist .exn{direction:ltr;unicode-bidi:isolate;font-weight:800;font-size:14px;color:var(--ink)}
+  .hist .exs{font-size:12.5px;font-weight:700;color:var(--recover);
+             font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+  .hist td.dlt{font-weight:800;font-size:12.5px;direction:rtl;text-align:right;
+               font-variant-numeric:tabular-nums;white-space:nowrap}
+  .hist td.dlt.up{color:var(--recover)}
+  .hist td.dlt.down{color:var(--effort)}
+  .hist td.dlt.same,.hist td.dlt.first{color:var(--faint);font-weight:400}
+  .hist td.nm{direction:ltr;text-align:left;font-weight:700}
+  .hist td.v{font-variant-numeric:tabular-nums;direction:ltr;text-align:left;color:var(--muted)}
+  .hist .empty{color:var(--faint)}
+
+  @media print{.tt,.tools,.hist{display:none}}
+</style>
+</head>
+<body>
+<button class="tt" id="tt" type="button">تبديل الوضع الغامق / الفاتح</button>
+<div class="wrap">
+  <header class="head">
+    <div class="kicker">برنامج تدريب أسبوعي · مصمّم على أوقاتك</div>
+    <h1>برنامجك الرياضي — قوة، حركة، وصحة</h1>
+    <p class="lede">مبني على التزاماتك الحالية بالضبط: نادي أحد / اثنين / خميس، وبسكليت السبت. مصمّم لعمرك، لتعويض قعدة البرمجة الطويلة، ولدعم الدورة الدموية والهرمونات.</p>
+    <div class="meta">
+      <span class="m">العمر <b><span class="num">30</span> → <span class="num">31</span></b></span>
+      <span class="m">النادي <b><span class="num">3</span> أيام</b></span>
+      <span class="m">بسكليت <b><span class="num">3</span> ساعات · السبت</b></span>
+      <span class="m">العمل <b>برمجة · قعدة طويلة</b></span>
+    </div>
+  </header>
+
+  <div class="sec-title">كيف تستعمل البرنامج</div>
+  <div class="howto">
+    <h3>3 خطوات بس</h3>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><p><b>افتح يوم اليوم</b>اعمل الحركات بالترتيب من فوق لتحت، مع إحماء بالبداية.</p></div>
+      <div class="step"><div class="n">2</div><p><b>الشكل قبل الوزن</b>أول مرة على حركة؟ اطلب من مدرب النادي يفرجيك الأداء الصح — أهم من الوزن الثقيل.</p></div>
+      <div class="step"><div class="n">3</div><p><b>زِد شوي كل أسبوع</b>لما تصير الحركة سهلة، زِد وزن بسيط أو عدّة وحدة.</p></div>
+    </div>
+    <div class="callout" style="margin-top:16px">
+      <b>أسماء التمارين بالإنجليزي:</b> كل تمرين مكتوب باسمه الإنجليزي — نفس الاسم اللي على الأجهزة وبيعرفه كل المدربين. تحته سطر عربي يشرح شو يشتغل. فرجي الاسم للمدرّب أو اكتبه بيوتيوب لتشوف الأداء الصح.
+    </div>
+  </div>
+
+  <div class="sec-title">الأسبوع بنظرة واحدة</div>
+  <div class="week">
+    <div class="day e"><div class="dow">الأحد</div><div class="dfoc">جسم علوي — دفع + بطن</div><span class="dtag">نادي</span></div>
+    <div class="day e"><div class="dow">الاثنين</div><div class="dfoc">أرجل — تمرين ثقيل</div><span class="dtag">نادي</span></div>
+    <div class="day r"><div class="dow">الثلاثاء</div><div class="dfoc">راحة + حركة بالمكتب</div><span class="dtag">تعافٍ</span></div>
+    <div class="day r"><div class="dow">الأربعاء</div><div class="dfoc">راحة + مرونة</div><span class="dtag">تعافٍ</span></div>
+    <div class="day e"><div class="dow">الخميس</div><div class="dfoc">جسم علوي — سحب + الظهر</div><span class="dtag">نادي</span></div>
+    <div class="day r"><div class="dow">الجمعة</div><div class="dfoc">راحة نشِطة + مشي</div><span class="dtag">تعافٍ</span></div>
+    <div class="day c"><div class="dow">السبت</div><div class="dfoc">بسكليت — تحمّل هوائي</div><span class="dtag">كارديو</span></div>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--effort)"></i> يوم أثقال (مجهود)</span>
+    <span><i style="background:var(--recover)"></i> راحة وحركة خفيفة</span>
+    <span><i style="background:var(--ride)"></i> كارديو تحمّل</span>
+  </div>
+
+  <div class="callout" style="margin-top:14px">
+    <b>ليش هالترتيب؟</b> الأحد والاثنين ورا بعض، فبفصلهم: الأحد علوي (دفع) لأنّ أرجلك لسا عم تتعافى من ركضة السبت. الاثنين أرجل ثقيلة — عندك بعدها 5 أيام قبل ركضة السبت الجاية عشان تتعافى تماماً. الخميس أثقاله علوية والأرجل خفيفة، عشان تجي طازج لبسكليت السبت.
+  </div>
+
+  <div class="sec-title">أيام النادي — التفاصيل</div>
+
+  <div class="reader" style="margin-bottom:16px">
+    <span class="big">4 × 8–10</span>
+    <span class="exp">يعني <b>4 جولات</b>، كل جولة <b>8 إلى 10 عدّات</b>. الراحة بين الجولات: التمارين الكبيرة (Squat / Bench / Deadlift / Pull-up) ريّح <b>2–3 دقايق</b>، والتمارين الصغيرة (Curl / Triceps Pushdown / Face Pull) <b>دقيقة–دقيقة ونص</b>. كل تمرين نادي ~<b>ساعة</b>.</span>
+  </div>
+
+  <div class="callout" style="margin-bottom:16px">
+    <b>كيف تختار الوزن؟</b> اختار وزن تخلّص فيه الجولة وأنت لسا قادر على <b>عدّتين زيادة</b>. خلصت الجولة وأنت مدمّر تماماً؟ الوزن ثقيل — نزّل. خلصتها وما حسيت بإشي؟ خفيف — زِد.
+  </div>
+
+  <div class="callout" style="margin-bottom:14px;border-inline-start-color:var(--recover)">
+    <b>سجّل أرقامك — تحت كل تمرين خانتين:</b> <b>كغ</b> و<b>عدّات</b>. اكتب فيهم وأنت بالنادي على التلفون، بيتحفظوا لحالهم بلا زر حفظ.
+    والشريط الأخضر بيفرجيك أرقام <b>آخر مرة</b> — دوس عليه لينسخهم لخانات اليوم، وبعدين عدّل اللي بدّك.
+    <br><br>
+    <b>اكتب العدّات لكل جولة مفصولة بفاصلة</b> — مثلاً <span class="num">10,9,8,8</span>. وانّها تنزل بين الجولات هاد طبيعي.
+    <br><br>
+    <b>وإذا بدّلت الوزن بين الجولات؟</b> اكتب الأوزان كمان مفصولة بفاصلة، <b>بنفس ترتيب العدّات</b> —
+    وزن <span class="num">50,55,55</span> مع عدّات <span class="num">10,8,8</span> معناها جولة على <span class="num">50</span> و<span class="num">10</span> عدّات، وجولتين على <span class="num">55</span> و<span class="num">8</span> عدّات.
+    وإذا كتبت وزن واحد بس، بيعتبره على كل الجولات.
+    <br>
+    بهالحالة عمود التغيير بالسجل بيقارن <b>الحمل الكلي</b> (مجموع وزن × عدّات) بالنسبة المئوية، لأنّ ما في وزن واحد يقارنه.
+    <br><br>
+    <b>ومتى تزيد الوزن؟</b> ضلّ على نفس الوزن كل أسبوع لحدّ ما تعمل <b>أعلى رقم بالنطاق بكل الجولات</b> — يعني <span class="num">10,10,10,10</span> على نطاق <span class="num">6–10</span>. وقتها بس زِد، والعدّات بترجع تنزل لأسفل النطاق واطلع فيهم من جديد.
+  </div>
+
+  <div class="tools">
+    <button type="button" id="lgdl">نزّل نسخة احتياطيّة</button>
+    <label class="fbtn" for="lgfile">حمّل نسخة من ملف</label>
+    <input type="file" id="lgfile" accept=".json,application/json,text/plain">
+    <button type="button" id="lgcopy">انسخ كنص</button>
+    <button type="button" id="lgpaste">الصق نص</button>
+    <button type="button" id="lgclear">امسح أرقام اليوم</button>
+    <span class="st" id="lgst"></span>
+    <span class="info" id="lginfo"></span>
+    <textarea id="lgdump" readonly aria-label="نسخة السجل"></textarea>
+  </div>
+
+  <div class="card e">
+    <div class="top"><span class="when">الأحد</span><h3>جسم علوي · دفع</h3><span class="dur">~<span class="num">60</span> دقيقة</span></div>
+    <ul class="ex">
+      <li><span class="name"><span class="t">Warm-up — Bike or Rower</span><small>دراجة أو تجديف خفيف + تحريك الأكتاف</small></span><span class="sets">5–8 دق</span></li>
+      <li data-log="bench"><span class="name"><span class="t">Bench Press</span><small>بار أو دمبل · الحركة الأساسية · تشتغل على الصدر والكتف</small></span><span class="sets">4 × 6–10</span></li>
+      <li data-log="incline"><span class="name"><span class="t">Incline Dumbbell Press</span><small>لأعلى الصدر · بعد البنش الأفقي مباشرة</small></span><span class="sets">3 × 10–12</span></li>
+      <li data-log="ohp"><span class="name"><span class="t">Overhead Shoulder Press</span><small>واقف أو جالس · دفع فوق الرأس · هي اللي تغطّي الكتف</small></span><span class="sets">3 × 8–10</span></li>
+      <li data-log="tri"><span class="name"><span class="t">Triceps Rope Pushdown / Dips</span><small>لخلفية الذراع · دفع الحبل لتحت أو دِبّ</small></span><span class="sets">3 × 10–12</span></li>
+      <li data-log="facepull"><span class="name"><span class="t">Face Pull</span><small>مهم لتصحيح وضعية الأكتاف بعد القعدة · <b>البكرة أعلى من وجهك بقليل، وكوعك بمستوى كتفك أو أعلى بقليل</b></small></span><span class="sets">3 × 15</span></li>
+      <li data-log="plank" data-wl="ثانية" data-rl="جولات"><span class="name"><span class="t">Plank + Hanging Knee Raise</span><small>بطن وثبات الجذع</small></span><span class="sets">3 × 45ث</span></li>
+    </ul>
+  </div>
+
+  <div class="card e">
+    <div class="top"><span class="when">الاثنين</span><h3>أرجل · تمرين ثقيل</h3><span class="dur">~<span class="num">60</span> دقيقة</span></div>
+    <ul class="ex">
+      <li><span class="name"><span class="t">Warm-up + Hip Mobility</span><small>ضروري قبل السكوات الثقيل · قعدتك مقصّرة قابض الورك</small></span><span class="sets">6–8 دق</span></li>
+      <li><span class="name"><span class="t">Dowel Hip Hinge <span class="learn">تسخين النمط</span></span><small>بعصا مكنسة، بلا وزن · اعملها قبل ما تلمس الدمبل — التفاصيل بالصندوق تحت</small></span><span class="sets">10 عدّات</span></li>
+      <li data-log="squat"><span class="name"><span class="t">Machine Back Squat / Goblet Squat</span><small>أقوى تمرين للأرجل · يرفع الهرمونات · ريّح 2–3 دقايق بين الجولات</small></span><span class="sets">4 × 6–8</span></li>
+      <li data-log="rdl"><span class="name"><span class="t">Romanian Deadlift (Dumbbell)</span><small>خلفية الفخذ عند الورك + المؤخرة + أسفل الظهر · ابدأ خفيف جداً واقرا قواعد الصندوق تحت قبل أول جولة</small></span><span class="sets">3 × 8–10</span></li>
+      <li data-log="bss"><span class="name"><span class="t">Bulgarian Split Squat</span><small>صدر مايل لقدّام · هيك المؤخرة تاخد الشغل بدل الفخذ الأمامي</small></span><span class="sets">3 × 10 / رجل</span></li>
+      <li data-log="legcurl"><span class="name"><span class="t">Leg Curl</span><small>خلفية الفخذ عند الركبة · الـ RDL بتغطّي الشغل عند الورك</small></span><span class="sets">3 × 10–12</span></li>
+      <li data-log="calf"><span class="name"><span class="t">Calf Raise</span><small>لعضلة الساق السفلى (السمانة)</small></span><span class="sets">3 × 15</span></li>
+      <li data-log="pallof"><span class="name"><span class="t">Pallof Press / Dead Bug</span><small>اختياري إذا ضلّ وقت · بطن وثبات الجذع</small></span><span class="sets">3 × 10</span></li>
+    </ul>
+
+    <div class="plan">
+      <h4>الـ <span class="ltr">RDL</span> بالدمبل — الـ 5 قواعد اللي تخلّيها آمنة</h4>
+      <p class="lead">الـ hinge حركة حياة، مش بس تمرين — كل مرة بترفع إشي عن الأرض بتعملها. صح إنها أكثر حركة بتُعمل غلط بالنادي، بس الغلط دايماً من نفس الأسباب: وزن ثقيل بدري، ومدى أعمق من اللازم. اضبط هالخمسة وبتصير من أأمن الحركات عندك.</p>
+      <ol class="stages">
+        <li>
+          <span class="sn">1</span>
+          <div>
+            <b>العصا قبل الدمبل — كل مرة</b>
+            <p>عصا مكنسة أو بار فاضي، عمودية على ظهرك تلمس <b>3 نقاط</b>: الراس، أعلى الظهر، العجز. امسكها بإيد فوق وإيد تحت. <span class="num">10</span> عدّات.</p>
+            <p>الشرط الوحيد: <b>الـ 3 نقاط تضلّ ملامسة العصا.</b> أول ما ظهرك يتقوّس بتفقد التلامس وبتحسّ فوراً — العصا هي المدرّب.</p>
+            <p class="tiny">لا تتخطاها ولا مرة · بتاخد 30 ثانية وبتضبط النمط قبل ما تحمّل</p>
+          </div>
+        </li>
+        <li>
+          <span class="sn">2</span>
+          <div>
+            <b>الوزن — ابدأ أخفّ ممّا تتوقّع</b>
+            <p>دمبلين <span class="num">5–6</span> كيلو للواحد (<span class="num">10–12</span> بالمجموع) أول <span class="num">2–3</span> تمارين. ولا كيلو زيادة، حتى لو حسّيتها سهلة.</p>
+            <p>الـ RDL <b>حركة تقنية أول، حمل ثاني</b>. أسبوعين على وزن خفيف مش تضييع وقت — هاي الاستثمار اللي يخليك ترفع ثقيل بأمان بعدين.</p>
+          </div>
+        </li>
+        <li>
+          <span class="sn">3</span>
+          <div>
+            <b>المدى والحركة — ادفع الورك لورا، مش تنزل لتحت</b>
+            <p>الرُكب تنثني شوي بس وتثبت. الدمبل <b>يزحلق ملاصق فخذك</b> وهو نازل — إذا بعد عنك، وزنك رح ينزل على ظهرك.</p>
+            <p>انزل <b>لحدّ تحت الركبة بس</b> — لا تلمس الأرض. توقّف لحظة ما تحسّ ظهرك بدّه يتقوّس، حتى لو كان أعلى من هيك.</p>
+            <p class="tiny">مدى قصير مظبوط أفضل بمراحل من مدى كامل بظهر مقوّس</p>
+          </div>
+        </li>
+        <li>
+          <span class="sn">4</span>
+          <div>
+            <b>الإشارة الحمراء — افرِق بين الشدّ والوجع</b>
+            <p><b>شدّ بخلفية الفخذ</b> = صح تماماً، هاي العضلة اللي المفروض تشتغل.</p>
+            <p><b>وجع أو ضغط بأسفل الظهر</b> = شكلك غلط. وقّف الجولة، نزّل الوزن، ورجّع العصا. لا تكمّل «بشدّ حالك».</p>
+            <p>وصوّر حالك <b>فيديو من الجناب</b> أول مرة — الظهر لازم يبيّن خط مستقيم مايل، مش قوس.</p>
+          </div>
+        </li>
+        <li>
+          <span class="sn">5</span>
+          <div>
+            <b>التقدّم — بشرط الشكل، مش بالوقت</b>
+            <p>لما تخلّص <span class="num">3 × 10</span> وظهرك مظبوط تماماً وحاسس حالك مرتاح — زِد <span class="num">2</span> كيلو لكل دمبل. مش قبل.</p>
+            <p class="tiny">الهدف بعد 3 شهور: <span class="num">3 × 8–10</span> بوزن محترم وشكل نظيف · ومن هون بتنتقل للبار إذا بدّك</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card e">
+    <div class="top"><span class="when">الخميس</span><h3>جسم علوي · سحب + الظهر</h3><span class="dur">~<span class="num">60</span> دقيقة</span></div>
+    <ul class="ex">
+      <li><span class="name"><span class="t">Warm-up</span><small>دراجة أو تجديف خفيف</small></span><span class="sets">5 دق</span></li>
+      <li data-log="pullup"><span class="name"><span class="t">Pull-up / Lat Pulldown</span><small>الحركة الأساسية · لعرض الظهر</small></span><span class="sets">4 × 8–10</span></li>
+      <li data-log="row"><span class="name"><span class="t">Barbell Row / Dumbbell Row</span><small>يشد الظهر ويصلّح الانحناء من القعدة</small></span><span class="sets">3 × 8–10</span></li>
+      <li data-log="revfly"><span class="name"><span class="t">Machine Reverse Fly</span><small>لمؤخرة الكتف · هي نفسها الـ Rear Delt Fly · والـ Face Pull يوم الأحد بيجيب نفس المنطقة بزاوية ثانية</small></span><span class="sets">3 × 15</span></li>
+      <li data-log="curl"><span class="name"><span class="t">Biceps Curl</span><small>لمقدمة الذراع · بار أو دمبل</small></span><span class="sets">3 × 10–12</span></li>
+      <li data-log="backext"><span class="name"><span class="t">Back Extension</span><small>خفيف · لأسفل الظهر</small></span><span class="sets">3 × 12</span></li>
+      <li data-log="sideplank" data-wl="ثانية" data-rl="جولات"><span class="name"><span class="t">Side Plank</span><small>بطن جانبي</small></span><span class="sets">3 × 30ث</span></li>
+    </ul>
+    <div class="callout" style="margin:0 20px 18px"><b>ملاحظة:</b> خلّي الأرجل خفيفة اليوم — بكرة الجمعة راحة وبعدها السبت ركضة طويلة، بدّك تجيها أرجل طازجة.</div>
+  </div>
+
+  <div class="card c">
+    <div class="top"><span class="when">السبت</span><h3>بسكليت · تحمّل هوائي</h3><span class="dur">~<span class="num">3</span> ساعات</span></div>
+    <ul class="ex">
+      <li><span class="name"><span class="t">Zone 2 — Easy Conversational Pace</span><small>أغلب الوقت · سرعة تقدر تحكي فيها بدون ما تنقطع — هي اللي تبني اللياقة وصحة الشرايين</small></span><span class="sets">~80%</span></li>
+      <li><span class="name"><span class="t">Short Intervals / Surges</span><small>اختياري · دفعات أقوى دقيقة–دقيقتين، من وقت لوقت</small></span><span class="sets">~20%</span></li>
+    </ul>
+    <div class="callout ride" style="margin:0 20px 18px"><b>مهم بالبسكليت الطويل:</b> استعمل سرج بفتحة/شق بالنص (cutout saddle) وخُد وقفات كل فترة — هيك تخفّف الضغط على منطقة العجان (بين الفخذين). وعدّل ارتفاع السرج صح.</div>
+  </div>
+
+  <div class="sec-title">كل يوم شغل — تعويض القعدة الطويلة</div>
+  <div class="grid2">
+    <div class="panel">
+      <h3>حركة خلال الدوام</h3>
+      <p class="sub">القعدة 8 ساعات تقصّر الورك وتضعّف المؤخرة وتقوّس الظهر — هاي بتعوّضها</p>
+      <ul>
+        <li><span><span class="t">Stand &amp; Walk Break</span><small>كل <span class="num">30–45</span> دقيقة: وقوف ومشي <span class="num">2–3</span> دقايق</small></span></li>
+        <li><span><span class="t">Hip Flexor Stretch</span><small>تمطيط مقدمة الورك · <span class="num">2 × 30</span>ث لكل جهة</small></span></li>
+        <li><span><span class="t">Thoracic Extension</span><small>فرد الظهر للخلف فوق ظهر الكرسي · <span class="num">10</span> عدّات</small></span></li>
+        <li><span><span class="t">Seated Glute Squeeze</span><small>شدّ عضلة المؤخرة وأنت قاعد · <span class="num">15</span> عدّة</small></span></li>
+        <li><span><span class="t">Chin Tuck + Scapular Squeeze</span><small>سحب الذقن للخلف + ضمّ لوحَي الكتف · لوضعية الرقبة</small></span></li>
+        <li><span><span class="t">Daily Steps</span><small>الهدف اليومي: <span class="num">8,000–10,000</span> خطوة</small></span></li>
+        <li><span><span class="t">Kegels / Pelvic Floor</span><small>شد عضلات قاع الحوض · <span class="num">3</span> جولات باليوم</small></span></li>
+      </ul>
+    </div>
+    <div class="panel warm">
+      <h3>قواعد لعمر الـ<span class="num">31</span></h3>
+      <p class="sub">تدرّب أذكى — التعافي هو اللي بيبني العضل، مش بس التمرين</p>
+      <ul>
+        <li>نوم <span class="num">7–9</span> ساعات — أهم إشي للتعافي والتستوستيرون</li>
+        <li>بروتين ~<span class="num">1.6–2</span> غرام لكل كيلو من وزنك يومياً</li>
+        <li>زيادة تدريجية: أضف وزن بسيط أو عدّة كل أسبوع</li>
+        <li>إحماء دائماً قبل الأثقال — المفاصل بتصير أحسّ بالعمر</li>
+        <li>أسبوع تخفيف (deload) كل <span class="num">6–8</span> أسابيع</li>
+        <li>الشكل الصحيح قبل الوزن — لا ترفع بغرور</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec-title">ليش هالبرنامج بيخدم صحتك كمان</div>
+  <div class="why">
+    <h3>مش بس لياقة — بيدعم الطاقة والرغبة اللي حكينا عنها</h3>
+    <ul>
+      <li><b>تمارين مركّبة (سكوات، بنش، ديدلفت)</b> — بترفع التستوستيرون طبيعياً</li>
+      <li><b>قاعدة هوائية (بسكليت + مشي)</b> — تدفّق دم وصحة شرايين = انتصاب أقوى</li>
+      <li><b>مؤخرة + ورك + Kegels</b> — تحسّن وظيفة قاع الحوض</li>
+      <li><b>حِمل متوازن بلا إفراط</b> — يمنع ارتفاع الكورتيزول</li>
+      <li><b>حركة تكسر القعدة الطويلة</b> — القعدة نفسها تضغط على الدورة الدموية</li>
+      <li><b>نوم وتعافٍ مضبوطين</b> — النافذة الأساسية لإنتاج الهرمونات</li>
+    </ul>
+  </div>
+
+  <details class="hist" id="lghist">
+    <summary>سجلّي الكامل — راجع تقدّمك</summary>
+    <div class="hswitch">
+      <button type="button" id="lgbyex" class="on">حسب التمرين — تشوف تقدّمك</button>
+      <button type="button" id="lgbyday">حسب اليوم — تشوف تمرين كامل</button>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead id="lgth"></thead>
+        <tbody id="lgtb"></tbody>
+      </table>
+    </div>
+  </details>
+
+  <p class="foot">
+    <b>تذكير:</b> هذا برنامج لياقة عام، آمن ومتدرّج. إذا في أي إصابة أو ألم مفصل — عدّل الحركة أو اسأل مختص. والبرنامج الرياضي بيمشي <b>بالتوازي</b> مع أي متابعة طبية، مش بديل عنها.
+  </p>
+</div>
+<script>
+  (function(){
+    var btn = document.getElementById('tt');
+    btn.addEventListener('click', function(){
+      var root = document.documentElement;
+      var isDark = root.getAttribute('data-theme') === 'dark' ||
+        (!root.hasAttribute('data-theme') && window.matchMedia('(prefers-color-scheme:dark)').matches);
+      root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    });
+  })();
+
+  /* ===== سجل الأوزان والعدّات — يُحفظ على نفس الجهاز عبر localStorage ===== */
+  (function(){
+    var KEY = 'wp_log_v1';
+    var db = {}, storeOK = true;
+    try{
+      localStorage.setItem('__wp_t','1'); localStorage.removeItem('__wp_t');
+      db = JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+    }catch(e){ storeOK = false; db = {}; }
+    if(typeof db !== 'object' || db === null) db = {};
+
+    function pad(n){ return (n < 10 ? '0' : '') + n; }
+    var d0 = new Date();
+    var TD = d0.getFullYear() + '-' + pad(d0.getMonth()+1) + '-' + pad(d0.getDate());
+
+    var st = document.getElementById('lgst'), stT;
+    function msg(text){
+      if(!st) return;
+      st.textContent = text;
+      clearTimeout(stT);
+      stT = setTimeout(function(){ st.textContent = ''; }, 2200);
+    }
+    function save(){
+      if(!storeOK){ msg('⚠ التخزين مش متاح — احفظ نسخة'); return; }
+      try{ localStorage.setItem(KEY, JSON.stringify(db)); }
+      catch(e){ msg('⚠ ما انحفظ'); }
+    }
+
+    /* آخر إدخال قبل اليوم، لعرضه كمرجع */
+    function prevOf(id){
+      var a = db[id] || [], best = null;
+      for(var i = 0; i < a.length; i++){
+        var e = a[i];
+        if(!e || e.d === TD) continue;
+        if(!e.w && !e.r) continue;
+        if(!best || e.d > best.d) best = e;
+      }
+      return best;
+    }
+    function todayOf(id){
+      var a = db[id] || [];
+      for(var i = 0; i < a.length; i++) if(a[i] && a[i].d === TD) return a[i];
+      return null;
+    }
+    function label(e, unit){
+      /* أوزان متعدّدة → نعرضها مقرونة بعدّاتها: 50×10 · 55×8 · 55×8 */
+      var ws = nums(e.w), rs = nums(e.r);
+      if(ws.length > 1 && rs.length){
+        var out = [];
+        for(var i = 0; i < rs.length; i++){
+          out.push(nice(ws[i] !== undefined ? ws[i] : ws[ws.length - 1]) + '×' + nice(rs[i]));
+        }
+        return out.join('  ·  ') + ' ' + unit;
+      }
+      var parts = [];
+      if(e.w) parts.push(e.w + ' ' + unit);
+      if(e.r) parts.push(e.r);
+      return parts.join('  ·  ');
+    }
+
+    function field(lab, cls){
+      var wrap = document.createElement('span'); wrap.className = 'f';
+      var tag  = document.createElement('span'); tag.textContent = lab;
+      var inp  = document.createElement('input');
+      inp.type = 'text'; inp.className = cls; inp.placeholder = '—';
+      inp.setAttribute('inputmode', 'text');   /* نص، عشان تقدر تكتب فاصلة بالوزن كمان */
+      inp.setAttribute('autocomplete','off');
+      inp.setAttribute('aria-label', lab);
+      wrap.appendChild(tag); wrap.appendChild(inp);
+      return { wrap: wrap, input: inp };
+    }
+
+    var ORDER = [], NAMES = {};
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-log]'), function(li){
+      var id = li.getAttribute('data-log');
+      var wl = li.getAttribute('data-wl') || 'كغ';
+      var rl = li.getAttribute('data-rl') || 'عدّات';
+      var nameEl = li.querySelector('.t');
+      ORDER.push(id);
+      NAMES[id] = nameEl ? nameEl.textContent.trim() : id;
+
+      var box = document.createElement('div'); box.className = 'log';
+      var p = prevOf(id), cur = todayOf(id);
+
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'prev' + (p ? '' : ' none');
+      if(p){
+        chip.appendChild(document.createTextNode('آخر مرة ' + p.d.slice(5) + ': '));
+        var v = document.createElement('span'); v.className = 'v';
+        v.textContent = label(p, wl);
+        chip.appendChild(v);
+        chip.appendChild(document.createTextNode('  ↩'));
+        chip.title = 'اضغط لنسخ أرقام آخر مرة';
+      } else {
+        chip.textContent = 'أول مرة على هذا التمرين';
+      }
+      box.appendChild(chip);
+
+      var fw = field(wl, 'w'), fr = field(rl, 'r');
+      box.appendChild(fw.wrap); box.appendChild(fr.wrap);
+      if(cur){ fw.input.value = cur.w || ''; fr.input.value = cur.r || ''; }
+
+      function commit(){
+        var w = fw.input.value.trim(), r = fr.input.value.trim();
+        var a = db[id] || (db[id] = []);
+        var idx = -1;
+        for(var i = 0; i < a.length; i++) if(a[i] && a[i].d === TD){ idx = i; break; }
+        if(!w && !r){
+          if(idx > -1) a.splice(idx, 1);
+        } else if(idx > -1){
+          a[idx].w = w; a[idx].r = r;
+        } else {
+          a.push({ d: TD, w: w, r: r });
+        }
+        save();
+        renderInfo();
+        if(storeOK) msg('✓ محفوظ');
+      }
+      fw.input.addEventListener('input', commit);
+      fr.input.addEventListener('input', commit);
+
+      chip.addEventListener('click', function(){
+        if(!p) return;
+        if(!fw.input.value) fw.input.value = p.w || '';
+        if(!fr.input.value) fr.input.value = p.r || '';
+        commit();
+      });
+
+      li.appendChild(box);
+    });
+
+    /* ===== السجل الكامل ===== */
+    var hist = document.getElementById('lghist'), tb = document.getElementById('lgtb');
+    function cell(text, cls, tag){
+      var el = document.createElement(tag || 'td');
+      if(cls) el.className = cls;
+      el.textContent = text;
+      return el;
+    }
+    var th_ = document.getElementById('lgth');
+    var MODE = 'ex';   /* 'ex' = حسب التمرين (تقدّم) · 'day' = حسب اليوم */
+
+    function num(v){
+      var m = String(v == null ? '' : v).match(/\d+(?:\.\d+)?/);
+      return m ? parseFloat(m[0]) : null;
+    }
+    function sumReps(v){
+      var m = String(v == null ? '' : v).match(/\d+(?:\.\d+)?/g);
+      if(!m) return null;
+      var t = 0;
+      for(var i = 0; i < m.length; i++) t += parseFloat(m[i]);
+      return t;
+    }
+    function nice(n){ return String(Math.round(n * 10) / 10); }
+    function nums(v){
+      var m = String(v == null ? '' : v).match(/\d+(?:\.\d+)?/g);
+      if(!m) return [];
+      return m.map(function(x){ return parseFloat(x); });
+    }
+    function nSets(v){ return nums(v).length; }
+    /* أعلى وزن بالجلسة — لما يكون في أكثر من وزن مكتوب */
+    function topW(v){
+      var a = nums(v);
+      if(!a.length) return null;
+      return Math.max.apply(null, a);
+    }
+    /* الحمل الكلي = مجموع (وزن × عدّات) لكل جولة · وزن واحد ينطبق على كل الجولات */
+    function volume(w, r){
+      var ws = nums(w), rs = nums(r);
+      if(!ws.length || !rs.length) return null;
+      var t = 0;
+      for(var i = 0; i < rs.length; i++){
+        t += (ws[i] !== undefined ? ws[i] : ws[ws.length - 1]) * rs[i];
+      }
+      return t;
+    }
+
+    /* المقارنة مع التمرين السابق لنفس الحركة: الوزن أولاً، وإذا ثابت فمجموع العدّات */
+    function delta(prev, cur){
+      if(!prev) return { cls: 'first', txt: 'البداية' };
+      /* أوزان متعدّدة بنفس الجلسة → المقارنة بالحمل الكلي، مش بوزن واحد */
+      if(nSets(prev.w) > 1 || nSets(cur.w) > 1){
+        var pv = volume(prev.w, prev.r), cv = volume(cur.w, cur.r);
+        var tip = 'الحمل الكلي = مجموع (وزن × عدّات) لكل جولة';
+        if(pv && cv && pv !== cv){
+          var pc = Math.round((cv - pv) / pv * 100);
+          if(pc === 0) return { cls: 'same', txt: 'نفس الحمل تقريباً', tip: tip };
+          return { cls: pc > 0 ? 'up' : 'down',
+                   txt: (pc > 0 ? '↑ +' : '↓ −') + Math.abs(pc) + '% حِمل', tip: tip };
+        }
+        return { cls: 'same', txt: 'نفس الشي', tip: tip };
+      }
+      var pw = num(prev.w), cw = num(cur.w);
+      if(pw !== null && cw !== null && pw !== cw){
+        var dw = cw - pw;
+        return { cls: dw > 0 ? 'up' : 'down',
+                 txt: (dw > 0 ? '↑ +' : '↓ −') + nice(Math.abs(dw)) + ' كغ' };
+      }
+      /* عدد الجولات مختلف → مجموع العدّات مش قابل للمقارنة، ما نحكم تقدّم ولا تراجع */
+      var ps = nSets(prev.r), cs = nSets(cur.r);
+      if(ps && cs && ps !== cs){
+        return { cls: 'same', txt: 'عدد الجولات مختلف (' + ps + ' ← ' + cs + ')' };
+      }
+      var pr = sumReps(prev.r), cr = sumReps(cur.r);
+      if(pr !== null && cr !== null && pr !== cr){
+        var dr = cr - pr;
+        return { cls: dr > 0 ? 'up' : 'down',
+                 txt: (dr > 0 ? '↑ +' : '↓ −') + nice(Math.abs(dr)) + ' عدّة' };
+      }
+      return { cls: 'same', txt: 'نفس الشي' };
+    }
+
+    function setHead(cols){
+      if(!th_) return;
+      while(th_.firstChild) th_.removeChild(th_.firstChild);
+      var tr = document.createElement('tr');
+      cols.forEach(function(c){ tr.appendChild(cell(c, null, 'th')); });
+      th_.appendChild(tr);
+    }
+    function emptyRow(span){
+      var tr = document.createElement('tr');
+      var td = cell('لسا ما سجّلت إشي — سجّل أرقامك بأول تمرين وارجع لهون.', 'empty');
+      td.colSpan = span; tr.appendChild(td); tb.appendChild(tr);
+    }
+    function entriesOf(id){
+      return (db[id] || [])
+        .filter(function(e){ return e && e.d && (e.w || e.r); })
+        .sort(function(a, b){ return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
+    }
+
+    /* عرض حسب التمرين — كل حركة وتاريخها، عشان يشوف إذا عم يتقدّم */
+    function renderByEx(){
+      setHead(['التاريخ','الوزن','العدّات','التغيير']);
+      var any = false;
+      ORDER.forEach(function(id){
+        var list = entriesOf(id);
+        if(!list.length) return;
+        any = true;
+        var first = list[0], last = list[list.length - 1];
+        var fw = topW(first.w), lw = topW(last.w);
+        var summary = list.length + ' تمرين';
+        if(list.length > 1 && fw !== null && lw !== null && fw !== lw){
+          summary = nice(fw) + ' → ' + nice(lw) + ' كغ  ·  ' + list.length + ' تمرين';
+        }
+        var hr = document.createElement('tr'); hr.className = 'dr er';
+        var h = cell('', null, 'th'); h.colSpan = 4;
+        var nm = document.createElement('span'); nm.className = 'exn';
+        nm.textContent = NAMES[id] || id;
+        var sm = document.createElement('span'); sm.className = 'exs';
+        sm.textContent = summary;
+        h.appendChild(nm); h.appendChild(sm);
+        hr.appendChild(h); tb.appendChild(hr);
+
+        var newest = list.slice().reverse();
+        newest.forEach(function(e, i){
+          var d = delta(newest[i + 1] || null, e);
+          var tr = document.createElement('tr');
+          tr.appendChild(cell(e.d, 'v'));
+          tr.appendChild(cell(e.w || '—', 'v'));
+          tr.appendChild(cell(e.r || '—', 'v'));
+          var dc = cell(d.txt, 'dlt ' + d.cls);
+          if(d.tip) dc.title = d.tip;
+          tr.appendChild(dc);
+          tb.appendChild(tr);
+        });
+      });
+      if(!any) emptyRow(4);
+    }
+
+    /* عرض حسب اليوم — كل يوم وكل تمارينه */
+    function renderByDay(){
+      setHead(['التمرين','الوزن','العدّات']);
+      var byDate = {};
+      ORDER.forEach(function(id){
+        entriesOf(id).forEach(function(e){
+          (byDate[e.d] = byDate[e.d] || []).push({ id: id, e: e });
+        });
+      });
+      var dates = Object.keys(byDate).sort().reverse();
+      if(!dates.length){ emptyRow(3); return; }
+      dates.forEach(function(d){
+        var hr = document.createElement('tr'); hr.className = 'dr';
+        var h = cell(d, null, 'th'); h.colSpan = 3;
+        hr.appendChild(h); tb.appendChild(hr);
+        byDate[d].forEach(function(x){
+          var tr = document.createElement('tr');
+          tr.appendChild(cell(NAMES[x.id] || x.id, 'nm'));
+          tr.appendChild(cell(x.e.w || '—', 'v'));
+          tr.appendChild(cell(x.e.r || '—', 'v'));
+          tb.appendChild(tr);
+        });
+      });
+    }
+
+    function renderHist(){
+      if(!tb) return;
+      while(tb.firstChild) tb.removeChild(tb.firstChild);
+      if(MODE === 'day') renderByDay(); else renderByEx();
+    }
+    if(hist) hist.addEventListener('toggle', function(){ if(hist.open) renderHist(); });
+
+    var bEx = document.getElementById('lgbyex'), bDay = document.getElementById('lgbyday');
+    function setMode(m){
+      MODE = m;
+      if(bEx)  bEx.className  = (m === 'ex'  ? 'on' : '');
+      if(bDay) bDay.className = (m === 'day' ? 'on' : '');
+      renderHist();
+    }
+    if(bEx)  bEx.addEventListener('click',  function(){ setMode('ex'); });
+    if(bDay) bDay.addEventListener('click', function(){ setMode('day'); });
+
+    /* ===== نسخ / استرجاع / مسح ===== */
+    var dump = document.getElementById('lgdump');
+    function showDump(txt){
+      if(!dump) return;
+      dump.value = txt; dump.style.display = 'block';
+      dump.focus(); dump.select();
+      msg('انسخ النص يدوياً');
+    }
+    var bCopy = document.getElementById('lgcopy');
+    if(bCopy) bCopy.addEventListener('click', function(){
+      var txt = JSON.stringify(db);
+      var ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      var done = false;
+      try{ done = document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta);
+      if(done){ msg('✓ انتسخ سجلّك — الزقه بمكان آمن'); return; }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(
+          function(){ msg('✓ انتسخ سجلّك — الزقه بمكان آمن'); },
+          function(){ showDump(txt); }
+        );
+        return;
+      }
+      showDump(txt);
+    });
+
+    /* دمج نسخة — لا يمسح إشي، يضيف ويكمّل الناقص */
+    function importText(s){
+      if(!s) return;
+      var incoming;
+      try{ incoming = JSON.parse(String(s).trim()); }
+      catch(e){ msg('⚠ الملف/النص غير صالح'); return; }
+      if(!incoming || typeof incoming !== 'object' || incoming.constructor === Array){
+        msg('⚠ الملف/النص غير صالح'); return;
+      }
+      var added = 0;
+      Object.keys(incoming).forEach(function(id){
+        var list = incoming[id];
+        if(!list || !list.length) return;
+        var cur = db[id] || (db[id] = []);
+        list.forEach(function(e){
+          if(!e || !e.d) return;
+          var found = null;
+          for(var i = 0; i < cur.length; i++) if(cur[i] && cur[i].d === e.d) found = cur[i];
+          if(found){ found.w = e.w || found.w; found.r = e.r || found.r; }
+          else { cur.push({ d: e.d, w: e.w || '', r: e.r || '' }); added++; }
+        });
+      });
+      save();
+      msg('✓ استُرجع ' + added + ' سطر — عم نحدّث الصفحة');
+      setTimeout(function(){ location.reload(); }, 900);
+    }
+
+    /* تنزيل نسخة كملف — أضمن من النسخ على التلفون */
+    var bDl = document.getElementById('lgdl');
+    if(bDl) bDl.addEventListener('click', function(){
+      var txt = JSON.stringify(db);
+      try{
+        var blob = new Blob([txt], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'my-workout-log-' + TD + '.json';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function(){
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 200);
+        msg('✓ نزّلت النسخة — خزّنها بمكان آمن');
+      }catch(e){ showDump(txt); }
+    });
+
+    var fInp = document.getElementById('lgfile');
+    if(fInp) fInp.addEventListener('change', function(){
+      var f = this.files && this.files[0];
+      if(!f) return;
+      var self = this;
+      var rd = new FileReader();
+      rd.onload  = function(){ self.value = ''; importText(String(rd.result)); };
+      rd.onerror = function(){ self.value = ''; msg('⚠ ما قدرت أقرا الملف'); };
+      rd.readAsText(f);
+    });
+
+    var bPaste = document.getElementById('lgpaste');
+    if(bPaste) bPaste.addEventListener('click', function(){
+      importText(window.prompt('الصق نسخة سجلّك هنا:'));
+    });
+
+    var bClear = document.getElementById('lgclear');
+    if(bClear) bClear.addEventListener('click', function(){
+      if(!window.confirm('تمسح كل أرقام اليوم (' + TD + ')؟ الأسابيع القديمة بتضلّ.')) return;
+      Object.keys(db).forEach(function(id){
+        db[id] = (db[id] || []).filter(function(e){ return !e || e.d !== TD; });
+      });
+      save();
+      setTimeout(function(){ location.reload(); }, 300);
+    });
+
+    /* سطر يفرجيه إنّ بياناته موجودة — طمأنة بالنظرة الأولى */
+    function renderInfo(){
+      var info = document.getElementById('lginfo');
+      if(!info) return;
+      if(!storeOK){
+        info.textContent = '⚠ هذا المتصفح مش بيخزّن — سجّل وانزّل نسخة قبل ما تسكّر الصفحة.';
+        return;
+      }
+      var days = {}, lines = 0;
+      Object.keys(db).forEach(function(id){
+        (db[id] || []).forEach(function(e){
+          if(!e || !e.d || (!e.w && !e.r)) return;
+          days[e.d] = 1; lines++;
+        });
+      });
+      var ds = Object.keys(days).sort();
+      info.textContent = ds.length
+        ? 'محفوظ عندك: ' + lines + ' سطر على ' + ds.length + ' يوم تمرين · آخر يوم ' + ds[ds.length-1]
+        : 'لسا فاضي — أول ما تكتب رقم بيتحفّظ لحاله.';
+    }
+    renderInfo();
+
+    if(!storeOK) msg('⚠ التخزين مش متاح بهذا المتصفح');
+  })();
+</script>
+</body>
+</html>
