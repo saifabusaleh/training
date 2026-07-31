@@ -7,7 +7,7 @@
 <style>
   :root{
     --bg:#f4f3f0; --surface:#ffffff; --surface-2:#faf9f6;
-    --ink:#20242b; --muted:#565d68; --faint:#818893; --line:#e4e2dc;
+    --ink:#20242b; --muted:#4b525d; --faint:#69707b; --line:#e4e2dc;
     --effort:#c1531c; --effort-soft:#f7e9df;
     --recover:#2c7f72; --recover-soft:#e2efeb;
     --ride:#31659f; --ride-soft:#e3ecf5;
@@ -17,7 +17,7 @@
   @media (prefers-color-scheme:dark){
     :root{
       --bg:#14161a; --surface:#1c1f25; --surface-2:#22262d;
-      --ink:#eceef1; --muted:#aeb5bf; --faint:#7c838f; --line:#2c3037;
+      --ink:#eceef1; --muted:#b8bfc9; --faint:#98a0ac; --line:#2c3037;
       --effort:#ef8a4f; --effort-soft:#3a2519;
       --recover:#5cc0af; --recover-soft:#17322d;
       --ride:#77a6da; --ride-soft:#17293c;
@@ -26,7 +26,7 @@
   }
   :root[data-theme="dark"]{
     --bg:#14161a; --surface:#1c1f25; --surface-2:#22262d;
-    --ink:#eceef1; --muted:#aeb5bf; --faint:#7c838f; --line:#2c3037;
+    --ink:#eceef1; --muted:#b8bfc9; --faint:#98a0ac; --line:#2c3037;
     --effort:#ef8a4f; --effort-soft:#3a2519;
     --recover:#5cc0af; --recover-soft:#17322d;
     --ride:#77a6da; --ride-soft:#17293c;
@@ -34,7 +34,7 @@
   }
   :root[data-theme="light"]{
     --bg:#f4f3f0; --surface:#ffffff; --surface-2:#faf9f6;
-    --ink:#20242b; --muted:#565d68; --faint:#818893; --line:#e4e2dc;
+    --ink:#20242b; --muted:#4b525d; --faint:#69707b; --line:#e4e2dc;
     --effort:#c1531c; --effort-soft:#f7e9df;
     --recover:#2c7f72; --recover-soft:#e2efeb;
     --ride:#31659f; --ride-soft:#e3ecf5;
@@ -187,9 +187,13 @@
   /* ===== سجل الأوزان والعدّات ===== */
   .log{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:11px}
   .log .prev{font:inherit;font-size:12.5px;font-weight:700;line-height:1.4;direction:rtl;text-align:right;
-             color:var(--recover);background:var(--recover-soft);border:1px solid transparent;
-             border-radius:9px;padding:9px 12px;min-height:40px;cursor:pointer}
-  .log .prev:hover{border-color:var(--recover)}
+             color:var(--recover);background:var(--recover-soft);border:1px solid var(--recover);
+             border-radius:9px;padding:9px 12px;min-height:40px;cursor:pointer;
+             display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px 8px}
+  .log .prev .tapme{background:var(--recover);color:#fff;border-radius:999px;
+                    padding:2px 9px;font-size:11.5px;font-weight:800;white-space:nowrap}
+  .log .prev:hover{filter:brightness(1.06)}
+  .log .prev:active{transform:translateY(1px)}
   .log .prev:focus-visible{outline:2px solid var(--recover);outline-offset:2px}
   .log .prev.none{color:var(--faint);background:var(--surface-2);border-color:var(--line);cursor:default}
   .log .prev.none:hover{border-color:var(--line)}
@@ -254,11 +258,60 @@
   .hist td.v{font-variant-numeric:tabular-nums;direction:ltr;text-align:left;color:var(--muted)}
   .hist .empty{color:var(--faint)}
 
-  @media print{.tt,.tools,.hist{display:none}}
+  /* ===== أزرار ثابتة فوق ===== */
+  .topbtns{position:fixed;inset-block-start:12px;inset-inline-end:12px;z-index:9;
+           display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;max-width:calc(100% - 24px)}
+  .topbtns .tt{position:static;inset:auto;box-shadow:var(--shadow)}
+  .gym-btn{background:var(--surface);border:1px solid var(--line);color:var(--muted);
+           border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;
+           cursor:pointer;box-shadow:var(--shadow);min-height:38px}
+  .gym-btn:hover{color:var(--ink)}
+  .gym-btn:focus-visible{outline:2px solid var(--effort);outline-offset:2px}
+  .gym-btn.on{background:var(--effort);border-color:var(--effort);color:#fff}
+
+  /* ===== وضع النادي — يخفّي كل شي إلا تمرين اليوم ===== */
+  body.gym .ref{display:none}
+  body.gym .card.other{display:none}
+  body.gym .wrap{padding-block-start:62px}
+
+  /* ===== بطاقة اليوم / طيّ باقي الأيام ===== */
+  .card .top{cursor:pointer;user-select:none}
+  .card .top .fold{margin-inline-start:8px;color:var(--faint);font-size:13px;font-weight:700;
+                   transition:transform .15s ease;display:inline-block}
+  .card.folded .top .fold{transform:rotate(-90deg)}
+  .card.folded .ex,.card.folded .plan,.card.folded > .callout{display:none}
+  .card.today{border-color:var(--effort);box-shadow:0 0 0 2px var(--effort-soft),var(--shadow)}
+  .card.c.today{border-color:var(--ride)}
+  .badge-today{font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;
+               background:var(--effort);color:#fff;letter-spacing:.02em}
+  .card.c .badge-today{background:var(--ride)}
+  .restday{background:var(--recover-soft);border:1px solid var(--line);
+           border-inline-start:4px solid var(--recover);border-radius:12px;
+           padding:14px 16px;margin-bottom:16px;font-size:15px;color:var(--ink)}
+  .restday b{color:var(--recover)}
+
+  /* ===== عدّاد الجولات ===== */
+  .setrow{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:11px}
+  .setrow .lbl{font-size:12px;font-weight:700;color:var(--faint)}
+  .dot{width:38px;height:38px;border-radius:50%;flex:none;cursor:pointer;
+       border:2px solid var(--line);background:var(--surface-2);
+       color:var(--faint);font:inherit;font-size:14px;font-weight:800;
+       font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;justify-content:center;
+       padding:0;transition:background .12s ease,color .12s ease,border-color .12s ease}
+  .dot:focus-visible{outline:2px solid var(--effort);outline-offset:2px}
+  .dot.done{background:var(--recover);border-color:var(--recover);color:#fff}
+  .setrow .cnt{font-size:12.5px;font-weight:700;color:var(--recover);
+               font-variant-numeric:tabular-nums;direction:rtl}
+  .setrow .cnt.zero{color:var(--faint);font-weight:400}
+
+  @media print{.tt,.topbtns,.tools,.hist,.setrow{display:none}}
 </style>
 </head>
 <body>
-<button class="tt" id="tt" type="button">تبديل الوضع الغامق / الفاتح</button>
+<div class="topbtns">
+<button class="gym-btn" id="gymbtn" type="button">🏋︎ وضع النادي</button>
+<button class="tt" id="tt" type="button">غامق / فاتح</button>
+</div>
 <div class="wrap">
   <header class="head">
     <div class="kicker">برنامج تدريب أسبوعي · مصمّم على أوقاتك</div>
@@ -272,8 +325,8 @@
     </div>
   </header>
 
-  <div class="sec-title">كيف تستعمل البرنامج</div>
-  <div class="howto">
+  <div class="sec-title ref">كيف تستعمل البرنامج</div>
+  <div class="howto ref">
     <h3>3 خطوات بس</h3>
     <div class="steps">
       <div class="step"><div class="n">1</div><p><b>افتح يوم اليوم</b>اعمل الحركات بالترتيب من فوق لتحت، مع إحماء بالبداية.</p></div>
@@ -285,38 +338,38 @@
     </div>
   </div>
 
-  <div class="sec-title">الأسبوع بنظرة واحدة</div>
-  <div class="week">
-    <div class="day e"><div class="dow">الأحد</div><div class="dfoc">جسم علوي — دفع + بطن</div><span class="dtag">نادي</span></div>
-    <div class="day e"><div class="dow">الاثنين</div><div class="dfoc">أرجل — تمرين ثقيل</div><span class="dtag">نادي</span></div>
-    <div class="day r"><div class="dow">الثلاثاء</div><div class="dfoc">راحة + حركة بالمكتب</div><span class="dtag">تعافٍ</span></div>
-    <div class="day r"><div class="dow">الأربعاء</div><div class="dfoc">راحة + مرونة</div><span class="dtag">تعافٍ</span></div>
-    <div class="day e"><div class="dow">الخميس</div><div class="dfoc">جسم علوي — سحب + الظهر</div><span class="dtag">نادي</span></div>
-    <div class="day r"><div class="dow">الجمعة</div><div class="dfoc">راحة نشِطة + مشي</div><span class="dtag">تعافٍ</span></div>
-    <div class="day c"><div class="dow">السبت</div><div class="dfoc">بسكليت — تحمّل هوائي</div><span class="dtag">كارديو</span></div>
+  <div class="sec-title ref">الأسبوع بنظرة واحدة</div>
+  <div class="week ref">
+    <div class="day e"><div class="dow" data-day="0">الأحد</div><div class="dfoc">جسم علوي — دفع + بطن</div><span class="dtag">نادي</span></div>
+    <div class="day e"><div class="dow" data-day="1">الاثنين</div><div class="dfoc">أرجل — تمرين ثقيل</div><span class="dtag">نادي</span></div>
+    <div class="day r"><div class="dow" data-day="2">الثلاثاء</div><div class="dfoc">راحة + حركة بالمكتب</div><span class="dtag">تعافٍ</span></div>
+    <div class="day r"><div class="dow" data-day="3">الأربعاء</div><div class="dfoc">راحة + مرونة</div><span class="dtag">تعافٍ</span></div>
+    <div class="day e"><div class="dow" data-day="4">الخميس</div><div class="dfoc">جسم علوي — سحب + الظهر</div><span class="dtag">نادي</span></div>
+    <div class="day r"><div class="dow" data-day="5">الجمعة</div><div class="dfoc">راحة نشِطة + مشي</div><span class="dtag">تعافٍ</span></div>
+    <div class="day c"><div class="dow" data-day="6">السبت</div><div class="dfoc">بسكليت — تحمّل هوائي</div><span class="dtag">كارديو</span></div>
   </div>
-  <div class="legend">
+  <div class="legend ref">
     <span><i style="background:var(--effort)"></i> يوم أثقال (مجهود)</span>
     <span><i style="background:var(--recover)"></i> راحة وحركة خفيفة</span>
     <span><i style="background:var(--ride)"></i> كارديو تحمّل</span>
   </div>
 
-  <div class="callout" style="margin-top:14px">
+  <div class="callout ref" style="margin-top:14px">
     <b>ليش هالترتيب؟</b> الأحد والاثنين ورا بعض، فبفصلهم: الأحد علوي (دفع) لأنّ أرجلك لسا عم تتعافى من ركضة السبت. الاثنين أرجل ثقيلة — عندك بعدها 5 أيام قبل ركضة السبت الجاية عشان تتعافى تماماً. الخميس أثقاله علوية والأرجل خفيفة، عشان تجي طازج لبسكليت السبت.
   </div>
 
   <div class="sec-title">أيام النادي — التفاصيل</div>
 
-  <div class="reader" style="margin-bottom:16px">
+  <div class="reader ref" style="margin-bottom:16px">
     <span class="big">4 × 8–10</span>
     <span class="exp">يعني <b>4 جولات</b>، كل جولة <b>8 إلى 10 عدّات</b>. الراحة بين الجولات: التمارين الكبيرة (Squat / Bench / Deadlift / Pull-up) ريّح <b>2–3 دقايق</b>، والتمارين الصغيرة (Curl / Triceps Pushdown / Face Pull) <b>دقيقة–دقيقة ونص</b>. كل تمرين نادي ~<b>ساعة</b>.</span>
   </div>
 
-  <div class="callout" style="margin-bottom:16px">
+  <div class="callout ref" style="margin-bottom:16px">
     <b>كيف تختار الوزن؟</b> اختار وزن تخلّص فيه الجولة وأنت لسا قادر على <b>عدّتين زيادة</b>. خلصت الجولة وأنت مدمّر تماماً؟ الوزن ثقيل — نزّل. خلصتها وما حسيت بإشي؟ خفيف — زِد.
   </div>
 
-  <div class="callout" style="margin-bottom:14px;border-inline-start-color:var(--recover)">
+  <div class="callout ref" style="margin-bottom:14px;border-inline-start-color:var(--recover)">
     <b>كيف تسجّل أرقامك</b>
     <ol class="logsteps">
       <li>تحت كل تمرين في <b>خانتين</b>: وحدة للوزن (<b>كغ</b>) ووحدة للعدّات. اكتب فيهم على التلفون وأنت بالنادي.
@@ -335,7 +388,7 @@
     <b>وين بتشوف تقدّمك؟</b> بآخر الصفحة، بصندوق <b>«سجلّي الكامل»</b>. عمود التغيير بيقارنك بآخر مرة على نفس التمرين. وإذا كنت مستعمل أكثر من وزن بنفس الجلسة، بيقارن <b>الحمل الكلي</b> (مجموع وزن × عدّات) بالنسبة المئوية — لأنّه ما في وزن واحد يقارنه.
   </div>
 
-  <div class="tools">
+  <div class="tools ref">
     <button type="button" id="lgdl">⬇︎ خُذ نسخة احتياطيّة</button>
     <label class="fbtn" for="lgfile">⬆︎ ارجاع سجل من نسخة</label>
     <input type="file" id="lgfile" accept=".json,application/json,text/plain">
@@ -349,7 +402,7 @@
     <textarea id="lgdump" readonly aria-label="نسخة السجل"></textarea>
   </div>
 
-  <div class="card e">
+  <div class="card e" data-day="0">
     <div class="top"><span class="when">الأحد</span><h3>جسم علوي · دفع</h3><span class="dur">~<span class="num">60</span> دقيقة</span></div>
     <ul class="ex">
       <li><span class="name"><span class="t">Warm-up — Bike or Rower</span><small>دراجة أو تجديف خفيف + تحريك الأكتاف</small></span><span class="sets">5–8 دق</span></li>
@@ -362,7 +415,7 @@
     </ul>
   </div>
 
-  <div class="card e">
+  <div class="card e" data-day="1">
     <div class="top"><span class="when">الاثنين</span><h3>أرجل · تمرين ثقيل</h3><span class="dur">~<span class="num">60</span> دقيقة</span></div>
     <ul class="ex">
       <li><span class="name"><span class="t">Warm-up + Hip Mobility</span><small>ضروري قبل السكوات الثقيل · قعدتك مقصّرة قابض الورك</small></span><span class="sets">6–8 دق</span></li>
@@ -426,7 +479,7 @@
     </div>
   </div>
 
-  <div class="card e">
+  <div class="card e" data-day="4">
     <div class="top"><span class="when">الخميس</span><h3>جسم علوي · سحب + الظهر</h3><span class="dur">~<span class="num">60</span> دقيقة</span></div>
     <ul class="ex">
       <li><span class="name"><span class="t">Warm-up</span><small>دراجة أو تجديف خفيف</small></span><span class="sets">5 دق</span></li>
@@ -440,7 +493,7 @@
     <div class="callout" style="margin:0 20px 18px"><b>ملاحظة:</b> خلّي الأرجل خفيفة اليوم — بكرة الجمعة راحة وبعدها السبت ركضة طويلة، بدّك تجيها أرجل طازجة.</div>
   </div>
 
-  <div class="card c">
+  <div class="card c" data-day="6">
     <div class="top"><span class="when">السبت</span><h3>بسكليت · تحمّل هوائي</h3><span class="dur">~<span class="num">3</span> ساعات</span></div>
     <ul class="ex">
       <li><span class="name"><span class="t">Zone 2 — Easy Conversational Pace</span><small>أغلب الوقت · سرعة تقدر تحكي فيها بدون ما تنقطع — هي اللي تبني اللياقة وصحة الشرايين</small></span><span class="sets">~80%</span></li>
@@ -449,8 +502,8 @@
     <div class="callout ride" style="margin:0 20px 18px"><b>مهم بالبسكليت الطويل:</b> استعمل سرج بفتحة/شق بالنص (cutout saddle) وخُد وقفات كل فترة — هيك تخفّف الضغط على منطقة العجان (بين الفخذين). وعدّل ارتفاع السرج صح.</div>
   </div>
 
-  <div class="sec-title">كل يوم شغل — تعويض القعدة الطويلة</div>
-  <div class="grid2">
+  <div class="sec-title ref">كل يوم شغل — تعويض القعدة الطويلة</div>
+  <div class="grid2 ref">
     <div class="panel">
       <h3>حركة خلال الدوام</h3>
       <p class="sub">القعدة 8 ساعات تقصّر الورك وتضعّف المؤخرة وتقوّس الظهر — هاي بتعوّضها</p>
@@ -478,8 +531,8 @@
     </div>
   </div>
 
-  <div class="sec-title">ليش هالبرنامج بيخدم صحتك كمان</div>
-  <div class="why">
+  <div class="sec-title ref">ليش هالبرنامج بيخدم صحتك كمان</div>
+  <div class="why ref">
     <h3>مش بس لياقة — بيدعم الطاقة والرغبة اللي حكينا عنها</h3>
     <ul>
       <li><b>تمارين مركّبة (سكوات، بنش، ديدلفت)</b> — بترفع التستوستيرون طبيعياً</li>
@@ -505,7 +558,7 @@
     </div>
   </details>
 
-  <p class="foot">
+  <p class="foot ref">
     <b>تذكير:</b> هذا برنامج لياقة عام، آمن ومتدرّج. إذا في أي إصابة أو ألم مفصل — عدّل الحركة أو اسأل مختص. والبرنامج الرياضي بيمشي <b>بالتوازي</b> مع أي متابعة طبية، مش بديل عنها.
   </p>
 </div>
@@ -612,7 +665,9 @@
         var v = document.createElement('span'); v.className = 'v';
         v.textContent = label(p, wl);
         chip.appendChild(v);
-        chip.appendChild(document.createTextNode('  ↩'));
+        var tap = document.createElement('span'); tap.className = 'tapme';
+        tap.textContent = '↩ انسخ';
+        chip.appendChild(tap);
         chip.title = 'اضغط لنسخ أرقام آخر مرة';
       } else {
         chip.textContent = 'أول مرة على هذا التمرين';
@@ -957,6 +1012,150 @@
     renderInfo();
 
     if(!storeOK) msg('⚠ التخزين مش متاح بهذا المتصفح');
+  })();
+  /* ===== يوم اليوم · وضع النادي · عدّاد الجولات · إبقاء الشاشة صاحية ===== */
+  (function(){
+    var DOW  = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    var today = new Date().getDay();
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.card[data-day]'));
+
+    /* --- طيّ / فتح كل بطاقة، مع فتح بطاقة اليوم بس --- */
+    cards.forEach(function(card){
+      var isToday = parseInt(card.getAttribute('data-day'), 10) === today;
+      var top = card.querySelector('.top');
+      var arrow = document.createElement('span');
+      arrow.className = 'fold'; arrow.textContent = '▾'; arrow.setAttribute('aria-hidden','true');
+      top.appendChild(arrow);
+
+      if(isToday){
+        card.classList.add('today');
+        var badge = document.createElement('span');
+        badge.className = 'badge-today'; badge.textContent = 'اليوم';
+        top.insertBefore(badge, top.firstChild);
+      } else {
+        card.classList.add('folded','other');
+      }
+
+      top.setAttribute('role','button');
+      top.setAttribute('tabindex','0');
+      function toggle(){ card.classList.toggle('folded'); }
+      top.addEventListener('click', function(ev){
+        if(ev.target.closest && ev.target.closest('input,button,.log,.setrow')) return;
+        toggle();
+      });
+      top.addEventListener('keydown', function(ev){
+        if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); toggle(); }
+      });
+    });
+
+    /* --- يوم راحة: ما في بطاقة، فبنحط سطر بيقول شو المفروض اليوم --- */
+    if(!document.querySelector('.card.today')){
+      var wk = document.querySelector('.dow[data-day="' + today + '"]');
+      var focEl = wk ? wk.parentNode.querySelector('.dfoc') : null;
+      var foc = focEl ? focEl.textContent.trim() : '';
+      var box = document.createElement('div');
+      box.className = 'restday';
+      var b1 = document.createElement('b');
+      b1.textContent = 'اليوم ' + DOW[today] + ' — ما في نادي.';
+      box.appendChild(b1);
+      box.appendChild(document.createTextNode(
+        ' ' + (foc ? foc + '. ' : '') + 'تحت بتلاقي أيام النادي — دوس على أي يوم لتفتحه.'));
+      var first = cards[0];
+      if(first && first.parentNode) first.parentNode.insertBefore(box, first);
+    }
+
+    /* --- وضع النادي --- */
+    var GKEY = 'wp_gym_v1';
+    var gb = document.getElementById('gymbtn');
+    function paint(on){
+      document.body.classList.toggle('gym', on);
+      gb.classList.toggle('on', on);
+      gb.textContent = on ? '✕ اخرج من وضع النادي' : '🏋︎ وضع النادي';
+      gb.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    var gymOn = false;
+    try{ gymOn = localStorage.getItem(GKEY) === '1'; }catch(e){}
+    paint(gymOn);
+    gb.addEventListener('click', function(){
+      gymOn = !gymOn;
+      paint(gymOn);
+      try{ localStorage.setItem(GKEY, gymOn ? '1' : '0'); }catch(e){}
+      if(gymOn){
+        keepAwake();
+        var t = document.querySelector('.card.today') || document.querySelector('.restday');
+        if(t) t.scrollIntoView({ block:'start' });
+      } else {
+        dropAwake();
+      }
+    });
+
+    /* --- خلّي الشاشة صاحية وأنت بالتمرين --- */
+    var lock = null;
+    function keepAwake(){
+      if(!('wakeLock' in navigator) || lock) return;
+      navigator.wakeLock.request('screen').then(function(l){
+        lock = l;
+        l.addEventListener('release', function(){ lock = null; });
+      }).catch(function(){});
+    }
+    function dropAwake(){ if(lock){ try{ lock.release(); }catch(e){} lock = null; } }
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState === 'visible' && document.body.classList.contains('gym')) keepAwake();
+    });
+    if(gymOn) keepAwake();
+
+    /* --- عدّاد الجولات: دوائر بتدوس عليها وحدة وحدة --- */
+    var SKEY = 'wp_sets_v1';
+    function pad(n){ return (n < 10 ? '0' : '') + n; }
+    var d0 = new Date();
+    var TD = d0.getFullYear() + '-' + pad(d0.getMonth()+1) + '-' + pad(d0.getDate());
+    var sdb = {};
+    try{ sdb = JSON.parse(localStorage.getItem(SKEY) || '{}') || {}; }catch(e){ sdb = {}; }
+    if(typeof sdb !== 'object' || sdb === null) sdb = {};
+    /* بنحتفظ بيوم اليوم بس — السجل الحقيقي هو الأوزان */
+    Object.keys(sdb).forEach(function(k){ if(k !== TD) delete sdb[k]; });
+    var mine = sdb[TD] || (sdb[TD] = {});
+    function ssave(){ try{ localStorage.setItem(SKEY, JSON.stringify(sdb)); }catch(e){} }
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-log]'), function(li){
+      var id = li.getAttribute('data-log');
+      var setsEl = li.querySelector('.sets');
+      var m = setsEl ? String(setsEl.textContent).match(/(\d+)\s*×/) : null;
+      var n = m ? parseInt(m[1], 10) : 3;
+      if(!(n > 0 && n <= 10)) n = 3;
+
+      var row = document.createElement('div'); row.className = 'setrow';
+      var lbl = document.createElement('span'); lbl.className = 'lbl';
+      lbl.textContent = 'الجولات:';
+      row.appendChild(lbl);
+
+      var dots = [], cnt = document.createElement('span');
+      function done(){ return mine[id] || 0; }
+      function paintDots(){
+        var k = done();
+        dots.forEach(function(d, i){ d.classList.toggle('done', i < k); });
+        cnt.className = 'cnt' + (k ? '' : ' zero');
+        cnt.textContent = k ? k + ' من ' + n + ' خِلصت' : 'ولا وحدة لسا';
+      }
+      for(var i = 0; i < n; i++){
+        (function(i){
+          var d = document.createElement('button');
+          d.type = 'button'; d.className = 'dot'; d.textContent = String(i+1);
+          d.setAttribute('aria-label', 'جولة ' + (i+1));
+          d.addEventListener('click', function(ev){
+            ev.stopPropagation();
+            /* دوس على آخر وحدة خضرا بترجّعها — تصليح غلط */
+            mine[id] = (done() === i + 1) ? i : i + 1;
+            if(!mine[id]) delete mine[id];
+            ssave(); paintDots(); keepAwake();
+          });
+          dots.push(d); row.appendChild(d);
+        })(i);
+      }
+      row.appendChild(cnt);
+      paintDots();
+      li.appendChild(row);
+    });
   })();
 </script>
 </body>
