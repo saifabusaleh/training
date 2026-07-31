@@ -272,6 +272,11 @@
   /* ===== وضع النادي — يخفّي كل شي إلا تمرين اليوم ===== */
   body.gym .ref{display:none}
   body.gym .card.other{display:none}
+  /* يوم راحة: ما في بطاقة اليوم — فبنخلّي كل الأيام بيّنة (مطويّة) عشان يقدر يفتح اللي بدّه */
+  body.gym.noday .card.other{display:block}
+  body.gym .sec-title,body.gym .head .kicker,body.gym .head .lede,body.gym .head .meta{display:none}
+  body.gym .head{margin-bottom:14px}
+  body.gym .head h1{font-size:clamp(20px,4vw,24px);margin-bottom:0}
   body.gym .wrap{padding-block-start:62px}
 
   /* ===== بطاقة اليوم / طيّ باقي الأيام ===== */
@@ -1065,6 +1070,7 @@
     }
 
     /* --- وضع النادي --- */
+    if(!document.querySelector('.card.today')) document.body.classList.add('noday');
     var GKEY = 'wp_gym_v1';
     var gb = document.getElementById('gymbtn');
     function paint(on){
