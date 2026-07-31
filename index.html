@@ -104,6 +104,10 @@
   .callout{background:var(--surface-2);border:1px solid var(--line);border-inline-start:4px solid var(--effort);border-radius:10px;padding:14px 16px;font-size:14.5px;color:var(--muted);line-height:1.7}
   .callout.ride{border-inline-start-color:var(--ride)}
   .callout b{color:var(--ink)}
+  .callout ol.steps{margin:10px 0 0;padding-inline-start:22px}
+  .callout ol.steps>li{margin-bottom:10px}
+  .callout ol.steps>li:last-child{margin-bottom:0}
+  .callout .ex{display:block;margin-top:4px;font-size:13.5px;color:var(--faint)}
 
   /* read-the-table helper */
   .reader{display:flex;gap:16px;align-items:center;background:var(--effort-soft);border-radius:12px;padding:14px 18px;flex-wrap:wrap}
@@ -312,29 +316,35 @@
   </div>
 
   <div class="callout" style="margin-bottom:14px;border-inline-start-color:var(--recover)">
-    <b>سجّل أرقامك — تحت كل تمرين خانتين:</b> <b>كغ</b> و<b>عدّات</b>. اكتب فيهم وأنت بالنادي على التلفون، بيتحفظوا لحالهم بلا زر حفظ.
-    والشريط الأخضر بيفرجيك أرقام <b>آخر مرة</b> — دوس عليه لينسخهم لخانات اليوم، وبعدين عدّل اللي بدّك.
-    <br><br>
-    <b>اكتب العدّات لكل جولة مفصولة بفاصلة</b> — مثلاً <span class="num">10,9,8,8</span>. وانّها تنزل بين الجولات هاد طبيعي.
-    <br><br>
-    <b>وإذا بدّلت الوزن بين الجولات؟</b> اكتب الأوزان كمان مفصولة بفاصلة، <b>بنفس ترتيب العدّات</b> —
-    وزن <span class="num">50,55,55</span> مع عدّات <span class="num">10,8,8</span> معناها جولة على <span class="num">50</span> و<span class="num">10</span> عدّات، وجولتين على <span class="num">55</span> و<span class="num">8</span> عدّات.
-    وإذا كتبت وزن واحد بس، بيعتبره على كل الجولات.
+    <b>كيف تسجّل أرقامك</b>
+    <ol class="steps">
+      <li>تحت كل تمرين في <b>خانتين</b>: وحدة للوزن (<b>كغ</b>) ووحدة للعدّات. اكتب فيهم على التلفون وأنت بالنادي.
+        <span class="ex">ما في زر حفظ — أول ما تكتب رقم بينحفظ لحاله.</span></li>
+      <li>بخانة <b>العدّات</b> اكتب كل جولة لحالها وبينهم فاصلة.
+        <span class="ex">مثال: <span class="num">10,9,8,8</span> = أربع جولات. إنّ العدد ينزل بالجولات الأخيرة شي طبيعي.</span></li>
+      <li>بخانة <b>كغ</b> اكتب وزن واحد إذا ضلّيت على نفس الوزن بكل الجولات.
+        <span class="ex">مثال: <span class="num">50</span> — بيعتبره على كل الجولات.</span></li>
+      <li>وإذا بدّلت الوزن بين الجولة والثانية، اكتب الأوزان بفواصل كمان — <b>بنفس ترتيب العدّات</b>.
+        <span class="ex">مثال: كغ <span class="num">50,55,55</span> مع عدّات <span class="num">10,8,8</span> = جولة على <span class="num">50</span> بـ<span class="num">10</span> عدّات، وجولتين على <span class="num">55</span> بـ<span class="num">8</span> عدّات.</span></li>
+      <li>الشريط الأخضر فوق الخانتين بيوريك أرقام <b>آخر مرة</b> بنفس التمرين. دوس عليه بينسخهم لخانات اليوم، وبعدين عدّل اللي بدّك.</li>
+    </ol>
     <br>
-    بهالحالة عمود التغيير بالسجل بيقارن <b>الحمل الكلي</b> (مجموع وزن × عدّات) بالنسبة المئوية، لأنّ ما في وزن واحد يقارنه.
+    <b>متى تزيد الوزن؟</b> ضلّ على نفس الوزن كل أسبوع لحدّ ما تعمل <b>أعلى رقم بالنطاق بكل الجولات</b> — يعني <span class="num">10,10,10,10</span> على نطاق <span class="num">6–10</span>. وقتها بس زِد، والعدّات بترجع تنزل لأسفل النطاق واطلع فيهم من جديد.
     <br><br>
-    <b>ومتى تزيد الوزن؟</b> ضلّ على نفس الوزن كل أسبوع لحدّ ما تعمل <b>أعلى رقم بالنطاق بكل الجولات</b> — يعني <span class="num">10,10,10,10</span> على نطاق <span class="num">6–10</span>. وقتها بس زِد، والعدّات بترجع تنزل لأسفل النطاق واطلع فيهم من جديد.
+    <b>وين بتشوف تقدّمك؟</b> بآخر الصفحة، بصندوق <b>«سجلّي الكامل»</b>. عمود التغيير بيقارنك بآخر مرة على نفس التمرين. وإذا كنت مستعمل أكثر من وزن بنفس الجلسة، بيقارن <b>الحمل الكلي</b> (مجموع وزن × عدّات) بالنسبة المئوية — لأنّه ما في وزن واحد يقارنه.
   </div>
 
   <div class="tools">
-    <button type="button" id="lgdl">نزّل نسخة احتياطيّة</button>
-    <label class="fbtn" for="lgfile">حمّل نسخة من ملف</label>
+    <button type="button" id="lgdl">⬇︎ خُذ نسخة احتياطيّة</button>
+    <label class="fbtn" for="lgfile">⬆︎ ارجاع سجل من نسخة</label>
     <input type="file" id="lgfile" accept=".json,application/json,text/plain">
     <button type="button" id="lgcopy">انسخ كنص</button>
     <button type="button" id="lgpaste">الصق نص</button>
     <button type="button" id="lgclear">امسح أرقام اليوم</button>
     <span class="st" id="lgst"></span>
     <span class="info" id="lginfo"></span>
+    <span class="info"><b>⬇︎ خُذ نسخة احتياطيّة</b> = بينزّل ملف صغير فيه كل سجلّك، خزّنه بتطبيق «الملفات». مرّة بالأسبوع بتكفي.
+      <b>⬆︎ ارجاع سجل من نسخة</b> = العكس، بترجّع سجل من ملف نزّلته قبل. ما بتحتاجه إلا إذا راحت الأرقام.</span>
     <textarea id="lgdump" readonly aria-label="نسخة السجل"></textarea>
   </div>
 
@@ -342,12 +352,12 @@
     <div class="top"><span class="when">الأحد</span><h3>جسم علوي · دفع</h3><span class="dur">~<span class="num">60</span> دقيقة</span></div>
     <ul class="ex">
       <li><span class="name"><span class="t">Warm-up — Bike or Rower</span><small>دراجة أو تجديف خفيف + تحريك الأكتاف</small></span><span class="sets">5–8 دق</span></li>
-      <li data-log="bench"><span class="name"><span class="t">Bench Press</span><small>بار أو دمبل · الحركة الأساسية · تشتغل على الصدر والكتف</small></span><span class="sets">4 × 6–10</span></li>
-      <li data-log="incline"><span class="name"><span class="t">Incline Dumbbell Press</span><small>لأعلى الصدر · بعد البنش الأفقي مباشرة</small></span><span class="sets">3 × 10–12</span></li>
-      <li data-log="ohp"><span class="name"><span class="t">Overhead Shoulder Press</span><small>واقف أو جالس · دفع فوق الرأس · هي اللي تغطّي الكتف</small></span><span class="sets">3 × 8–10</span></li>
-      <li data-log="tri"><span class="name"><span class="t">Triceps Rope Pushdown / Dips</span><small>لخلفية الذراع · دفع الحبل لتحت أو دِبّ</small></span><span class="sets">3 × 10–12</span></li>
-      <li data-log="facepull"><span class="name"><span class="t">Face Pull</span><small>مهم لتصحيح وضعية الأكتاف بعد القعدة · <b>البكرة أعلى من وجهك بقليل، وكوعك بمستوى كتفك أو أعلى بقليل</b></small></span><span class="sets">3 × 15</span></li>
-      <li data-log="plank" data-wl="ثانية" data-rl="جولات"><span class="name"><span class="t">Plank + Hanging Knee Raise</span><small>بطن وثبات الجذع</small></span><span class="sets">3 × 45ث</span></li>
+      <li data-log="bench"><span class="name"><span class="t">Bench Press</span><small><b>الصدر</b> — ومعه الكتف الأمامي والترايسبس مساعدين · بار أو دمبل</small></span><span class="sets">4 × 6–10</span></li>
+      <li data-log="incline"><span class="name"><span class="t">Incline Dumbbell Press</span><small><b>أعلى الصدر</b> — الجزء اللي تحت الترقوة · بعد البنش الأفقي مباشرة</small></span><span class="sets">3 × 10–12</span></li>
+      <li data-log="ohp"><span class="name"><span class="t">Overhead Shoulder Press</span><small><b>الكتف</b> — الرأس الأمامي والجانبي · دفع فوق الرأس، واقف أو جالس</small></span><span class="sets">3 × 8–10</span></li>
+      <li data-log="tri"><span class="name"><span class="t">Triceps Rope Pushdown / Dips</span><small><b>الترايسبس</b> — خلفية الذراع · دفع الحبل لتحت أو دِبّ</small></span><span class="sets">3 × 10–12</span></li>
+      <li data-log="facepull"><span class="name"><span class="t">Face Pull</span><small><b>مؤخرة الكتف وأعلى الظهر</b> — بتسحب الكتف للخلف وتصلّح وضعيته بعد القعدة · <b>البكرة أعلى من وجهك بقليل، وكوعك بمستوى كتفك أو أعلى بقليل</b></small></span><span class="sets">3 × 15</span></li>
+      <li data-log="plank" data-wl="ثانية" data-rl="جولات"><span class="name"><span class="t">Plank + Hanging Knee Raise</span><small><b>البطن</b> — الأمامي والعميق · بتثبّت الجذع وتحمي أسفل الظهر</small></span><span class="sets">3 × 45ث</span></li>
     </ul>
   </div>
 
@@ -356,12 +366,12 @@
     <ul class="ex">
       <li><span class="name"><span class="t">Warm-up + Hip Mobility</span><small>ضروري قبل السكوات الثقيل · قعدتك مقصّرة قابض الورك</small></span><span class="sets">6–8 دق</span></li>
       <li><span class="name"><span class="t">Dowel Hip Hinge <span class="learn">تسخين النمط</span></span><small>بعصا مكنسة، بلا وزن · اعملها قبل ما تلمس الدمبل — التفاصيل بالصندوق تحت</small></span><span class="sets">10 عدّات</span></li>
-      <li data-log="squat"><span class="name"><span class="t">Machine Back Squat / Goblet Squat</span><small>أقوى تمرين للأرجل · يرفع الهرمونات · ريّح 2–3 دقايق بين الجولات</small></span><span class="sets">4 × 6–8</span></li>
-      <li data-log="rdl"><span class="name"><span class="t">Romanian Deadlift (Dumbbell)</span><small>خلفية الفخذ عند الورك + المؤخرة + أسفل الظهر · ابدأ خفيف جداً واقرا قواعد الصندوق تحت قبل أول جولة</small></span><span class="sets">3 × 8–10</span></li>
-      <li data-log="bss"><span class="name"><span class="t">Bulgarian Split Squat</span><small>صدر مايل لقدّام · هيك المؤخرة تاخد الشغل بدل الفخذ الأمامي</small></span><span class="sets">3 × 10 / رجل</span></li>
-      <li data-log="legcurl"><span class="name"><span class="t">Leg Curl</span><small>خلفية الفخذ عند الركبة · الـ RDL بتغطّي الشغل عند الورك</small></span><span class="sets">3 × 10–12</span></li>
-      <li data-log="calf"><span class="name"><span class="t">Calf Raise</span><small>لعضلة الساق السفلى (السمانة)</small></span><span class="sets">3 × 15</span></li>
-      <li data-log="pallof"><span class="name"><span class="t">Pallof Press / Dead Bug</span><small>اختياري إذا ضلّ وقت · بطن وثبات الجذع</small></span><span class="sets">3 × 10</span></li>
+      <li data-log="squat"><span class="name"><span class="t">Machine Back Squat / Goblet Squat</span><small><b>مقدّمة الفخذ (كوادريسبس) + المؤخرة</b> — أقوى تمرين للأرجل · ريّح 2–3 دقايق بين الجولات</small></span><span class="sets">4 × 6–8</span></li>
+      <li data-log="rdl"><span class="name"><span class="t">Romanian Deadlift (Dumbbell)</span><small><b>خلفية الفخذ (هامسترينغ) + المؤخرة</b> — وأسفل الظهر بيشتغل مثبّت · ابدأ خفيف جداً واقرا قواعد الصندوق تحت قبل أول جولة</small></span><span class="sets">3 × 8–10</span></li>
+      <li data-log="bss"><span class="name"><span class="t">Bulgarian Split Squat</span><small><b>المؤخرة + مقدّمة الفخذ</b> — رجل رجل · ميّل صدرك لقدّام تاخد المؤخرة الشغل أكثر</small></span><span class="sets">3 × 10 / رجل</span></li>
+      <li data-log="legcurl"><span class="name"><span class="t">Leg Curl</span><small><b>خلفية الفخذ (هامسترينغ)</b> — عن طريق ثني الركبة · بتكمّل الـRDL اللي بتشتغلها من الورك</small></span><span class="sets">3 × 10–12</span></li>
+      <li data-log="calf"><span class="name"><span class="t">Calf Raise</span><small><b>السمانة</b> — بطة الرجل، تحت الركبة من ورا</small></span><span class="sets">3 × 15</span></li>
+      <li data-log="pallof"><span class="name"><span class="t">Pallof Press / Dead Bug</span><small><b>البطن الجانبي وثبات الجذع</b> — اختياري إذا ضلّ وقت</small></span><span class="sets">3 × 10</span></li>
     </ul>
 
     <div class="plan">
@@ -419,12 +429,12 @@
     <div class="top"><span class="when">الخميس</span><h3>جسم علوي · سحب + الظهر</h3><span class="dur">~<span class="num">60</span> دقيقة</span></div>
     <ul class="ex">
       <li><span class="name"><span class="t">Warm-up</span><small>دراجة أو تجديف خفيف</small></span><span class="sets">5 دق</span></li>
-      <li data-log="pullup"><span class="name"><span class="t">Pull-up / Lat Pulldown</span><small>الحركة الأساسية · لعرض الظهر</small></span><span class="sets">4 × 8–10</span></li>
-      <li data-log="row"><span class="name"><span class="t">Barbell Row / Dumbbell Row</span><small>يشد الظهر ويصلّح الانحناء من القعدة</small></span><span class="sets">3 × 8–10</span></li>
-      <li data-log="revfly"><span class="name"><span class="t">Machine Reverse Fly</span><small>لمؤخرة الكتف · هي نفسها الـ Rear Delt Fly · والـ Face Pull يوم الأحد بيجيب نفس المنطقة بزاوية ثانية</small></span><span class="sets">3 × 15</span></li>
-      <li data-log="curl"><span class="name"><span class="t">Biceps Curl</span><small>لمقدمة الذراع · بار أو دمبل</small></span><span class="sets">3 × 10–12</span></li>
-      <li data-log="backext"><span class="name"><span class="t">Back Extension</span><small>خفيف · لأسفل الظهر</small></span><span class="sets">3 × 12</span></li>
-      <li data-log="sideplank" data-wl="ثانية" data-rl="جولات"><span class="name"><span class="t">Side Plank</span><small>بطن جانبي</small></span><span class="sets">3 × 30ث</span></li>
+      <li data-log="pullup"><span class="name"><span class="t">Pull-up / Lat Pulldown</span><small><b>الظهر العريض (اللاتس)</b> — الجناحين على الجنب · ومعه البايسبس مساعد</small></span><span class="sets">4 × 8–10</span></li>
+      <li data-log="row"><span class="name"><span class="t">Barbell Row / Dumbbell Row</span><small><b>وسط الظهر</b> — بين لوحَي الكتف · بيشدّ الظهر ويصلّح انحناء القعدة</small></span><span class="sets">3 × 8–10</span></li>
+      <li data-log="revfly"><span class="name"><span class="t">Machine Reverse Fly</span><small><b>مؤخرة الكتف</b> — هي نفسها الـRear Delt Fly · والـFace Pull يوم الأحد بيجيب نفس المنطقة بزاوية ثانية</small></span><span class="sets">3 × 15</span></li>
+      <li data-log="curl"><span class="name"><span class="t">Biceps Curl</span><small><b>البايسبس</b> — مقدّمة الذراع · بار أو دمبل</small></span><span class="sets">3 × 10–12</span></li>
+      <li data-log="backext"><span class="name"><span class="t">Back Extension</span><small><b>أسفل الظهر + المؤخرة</b> — خفيف، مش للتثقيل</small></span><span class="sets">3 × 12</span></li>
+      <li data-log="sideplank" data-wl="ثانية" data-rl="جولات"><span class="name"><span class="t">Side Plank</span><small><b>البطن الجانبي (المائل)</b> — بيثبّت الجذع من الجنب</small></span><span class="sets">3 × 30ث</span></li>
     </ul>
     <div class="callout" style="margin:0 20px 18px"><b>ملاحظة:</b> خلّي الأرجل خفيفة اليوم — بكرة الجمعة راحة وبعدها السبت ركضة طويلة، بدّك تجيها أرجل طازجة.</div>
   </div>
