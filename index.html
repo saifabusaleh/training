@@ -400,10 +400,12 @@
     <button type="button" id="lgcopy">انسخ كنص</button>
     <button type="button" id="lgpaste">الصق نص</button>
     <button type="button" id="lgclear">امسح أرقام اليوم</button>
+    <button type="button" id="lgsync">☁ فعّل المزامنة السحابية</button>
     <span class="st" id="lgst"></span>
     <span class="info" id="lginfo"></span>
     <span class="info"><b>⬇︎ خُذ نسخة احتياطيّة</b> = بينزّل ملف صغير فيه كل سجلّك، خزّنه بتطبيق «الملفات». مرّة بالأسبوع بتكفي.
-      <b>⬆︎ ارجاع سجل من نسخة</b> = العكس، بترجّع سجل من ملف نزّلته قبل. ما بتحتاجه إلا إذا راحت الأرقام.</span>
+      <b>⬆︎ ارجاع سجل من نسخة</b> = العكس، بترجّع سجل من ملف نزّلته قبل. ما بتحتاجه إلا إذا راحت الأرقام.
+      <b>☁ المزامنة السحابية</b> = سجلّك بينحفظ بالسحابة كمان، وبتشوفه من أي جهاز بعد ما تكتب نفس كلمة السر عليه.</span>
     <textarea id="lgdump" readonly aria-label="نسخة السجل"></textarea>
   </div>
 
@@ -605,6 +607,7 @@
       if(!storeOK){ msg('⚠ التخزين مش متاح — احفظ نسخة'); return; }
       try{ localStorage.setItem(KEY, JSON.stringify(db)); }
       catch(e){ msg('⚠ ما انحفظ'); }
+      pushCloud();
     }
 
     /* آخر إدخال قبل اليوم، لعرضه كمرجع */
@@ -923,15 +926,8 @@
       showDump(txt);
     });
 
-    /* دمج نسخة — لا يمسح إشي، يضيف ويكمّل الناقص */
-    function importText(s){
-      if(!s) return;
-      var incoming;
-      try{ incoming = JSON.parse(String(s).trim()); }
-      catch(e){ msg('⚠ الملف/النص غير صالح'); return; }
-      if(!incoming || typeof incoming !== 'object' || incoming.constructor === Array){
-        msg('⚠ الملف/النص غير صالح'); return;
-      }
+    /* دمج بيانات واردة — لا يمسح إشي، يضيف ويكمّل الناقص · يرجّع عدد الأسطر المضافة */
+    function mergeData(incoming){
       var added = 0;
       Object.keys(incoming).forEach(function(id){
         var list = incoming[id];
@@ -945,9 +941,22 @@
           else { cur.push({ d: e.d, w: e.w || '', r: e.r || '' }); added++; }
         });
       });
+      return added;
+    }
+
+    /* دمج نسخة — لا يمسح إشي، يضيف ويكمّل الناقص */
+    function importText(s){
+      if(!s) return;
+      var incoming;
+      try{ incoming = JSON.parse(String(s).trim()); }
+      catch(e){ msg('⚠ الملف/النص غير صالح'); return; }
+      if(!incoming || typeof incoming !== 'object' || incoming.constructor === Array){
+        msg('⚠ الملف/النص غير صالح'); return;
+      }
+      var added = mergeData(incoming);
       save();
       msg('✓ استُرجع ' + added + ' سطر — عم نحدّث الصفحة');
-      setTimeout(function(){ location.reload(); }, 900);
+      afterPush(function(){ location.reload(); });
     }
 
     /* تنزيل نسخة كملف — أضمن من النسخ على التلفون */
@@ -993,7 +1002,7 @@
         db[id] = (db[id] || []).filter(function(e){ return !e || e.d !== TD; });
       });
       save();
-      setTimeout(function(){ location.reload(); }, 300);
+      afterPush(function(){ location.reload(); });
     });
 
     /* سطر يفرجيه إنّ بياناته موجودة — طمأنة بالنظرة الأولى */
@@ -1019,6 +1028,102 @@
     renderInfo();
 
     if(!storeOK) msg('⚠ التخزين مش متاح بهذا المتصفح');
+
+    /* ===== مزامنة سحابية — Supabase ===== */
+    /* المفتاح العام (publishable) مصمّم يكون علني — الحماية بكلمة سر المزامنة اللي بتضل عندك بس */
+    var SB_URL  = 'https://ubnxwwqgnyxobnfjjkso.supabase.co';
+    var SB_KEY  = 'sb_publishable_2VOA7PdxewtWMhUuZ1j2cw_xl4pwLRT';
+    var SYNCKEY = 'wp_sync_v1';
+    var syncId  = null;
+    try{ syncId = localStorage.getItem(SYNCKEY) || null; }catch(e){}
+
+    function sbCall(fn, body){
+      return fetch(SB_URL + '/rest/v1/rpc/' + fn, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
+        body: JSON.stringify(body)
+      }).then(function(res){
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      }).then(function(t){ return t && t !== 'null' ? JSON.parse(t) : null; });
+    }
+
+    function pushNow(){
+      if(!syncId) return null;
+      return sbCall('wp_save_log', { sid: syncId, payload: db }).then(
+        function(){ paintSync(true); },
+        function(){ paintSync(false); }
+      );
+    }
+
+    /* رفع مؤجّل — عشان ما نبعت طلب على كل حرف وأنت عم تكتب */
+    var pushT = null;
+    function pushCloud(){
+      if(!syncId) return;
+      clearTimeout(pushT);
+      pushT = setTimeout(pushNow, 1200);
+    }
+
+    /* نفّذ بعد ما يخلص الرفع — وإذا ما في نت، كمّل بعد ثانيتين على الأكثر */
+    function afterPush(cb){
+      clearTimeout(pushT);
+      var p = pushNow();
+      if(!p){ setTimeout(cb, 300); return; }
+      var done = false;
+      function go(){ if(!done){ done = true; cb(); } }
+      p.then(go, go);
+      setTimeout(go, 2500);
+    }
+
+    function pullCloud(){
+      if(!syncId) return;
+      sbCall('wp_get_log', { sid: syncId }).then(function(remote){
+        var added = 0;
+        if(remote && typeof remote === 'object' && remote.constructor !== Array){
+          added = mergeData(remote);
+        }
+        if(added){
+          save();
+          msg('☁ نزل ' + added + ' سطر من السحابة — عم نحدّث');
+          setTimeout(function(){ location.reload(); }, 900);
+        } else {
+          /* السحابة فاضية أو ناقصة — ارفع اللي عندك */
+          pushNow();
+        }
+      }, function(){
+        paintSync(false);
+        msg('⚠ ما قدرت أوصل للسحابة — سجلك محفوظ محلياً');
+      });
+    }
+
+    var bSync = document.getElementById('lgsync');
+    function paintSync(ok){
+      if(!bSync) return;
+      if(!syncId){ bSync.textContent = '☁ فعّل المزامنة السحابية'; return; }
+      bSync.textContent = ok === false ? '☁ المزامنة معلّقة — ما في نت؟' : '☁ المزامنة شغالة';
+    }
+    if(bSync){
+      paintSync();
+      bSync.addEventListener('click', function(){
+        if(syncId){
+          if(!window.confirm('توقف المزامنة على هذا الجهاز؟ سجلك بيضل محفوظ محلياً وبالسحابة.')) return;
+          syncId = null;
+          try{ localStorage.removeItem(SYNCKEY); }catch(e){}
+          paintSync();
+          return;
+        }
+        var v = window.prompt('اكتب كلمة سر المزامنة (نفسها على كل أجهزتك، 8 أحرف على الأقل):');
+        if(!v) return;
+        v = v.trim();
+        if(v.length < 8){ msg('⚠ قصيرة — 8 أحرف على الأقل'); return; }
+        syncId = v;
+        try{ localStorage.setItem(SYNCKEY, v); }catch(e){}
+        paintSync();
+        msg('☁ عم نتزامن...');
+        pullCloud();
+      });
+    }
+    if(syncId) pullCloud();
   })();
   /* ===== يوم اليوم · وضع النادي · عدّاد الجولات · إبقاء الشاشة صاحية ===== */
   (function(){
