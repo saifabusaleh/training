@@ -41,7 +41,8 @@
     --shadow:0 1px 2px rgba(20,24,31,.04),0 6px 20px rgba(20,24,31,.06);
   }
   *{box-sizing:border-box;min-width:0}
-  html,body{max-width:100%;overflow-x:hidden;margin:0;background:var(--bg);color:var(--ink);direction:rtl}
+  html,body{max-width:100%;margin:0;background:var(--bg);color:var(--ink);direction:rtl}
+  html{overflow-x:hidden} /* على body بيقتل position:sticky لشريط الأزرار */
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Arabic","Geeza Pro","Helvetica Neue",Arial,sans-serif;
     line-height:1.7; -webkit-font-smoothing:antialiased;
@@ -54,7 +55,7 @@
   h1,h2,h3,p,ul,ol{margin:0}
   ul,ol{padding:0;list-style:none}
   p,li{overflow-wrap:break-word}
-  .num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+  .num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;white-space:nowrap}
 
   /* theme toggle */
   .tt{position:fixed;inset-block-start:12px;inset-inline-end:12px;z-index:9;background:var(--surface);border:1px solid var(--line);
@@ -92,7 +93,7 @@
   .day.e::before{background:var(--effort)} .day.r::before{background:var(--recover)} .day.c::before{background:var(--ride)}
   .day .dow{font-size:13px;color:var(--ink);font-weight:800;margin-bottom:6px}
   .day .dfoc{font-size:13.5px;color:var(--muted);line-height:1.4}
-  .day .dtag{font-size:11.5px;margin-top:9px;font-weight:700;padding:3px 9px;border-radius:999px;display:inline-block}
+  .day .dtag{font-size:12.5px;margin-top:9px;font-weight:700;padding:3px 9px;border-radius:999px;display:inline-block}
   .day.e .dtag{background:var(--effort-soft);color:var(--effort)}
   .day.r .dtag{background:var(--recover-soft);color:var(--recover)}
   .day.c .dtag{background:var(--ride-soft);color:var(--ride)}
@@ -126,7 +127,7 @@
   .card .top h3{font-size:19px;font-weight:800;letter-spacing:-.01em}
   .card .top .dur{margin-inline-start:auto;font-size:13px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);padding:4px 12px;border-radius:999px}
   .ex{padding:6px 20px 16px}
-  .ex li{display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ex li{display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
   .ex li:last-child{border-bottom:0}
   .ex .name{font-weight:700;font-size:15.5px}
   .ex .name small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:4px;line-height:1.5}
@@ -138,7 +139,7 @@
   .panel .en,.why .en{color:var(--recover);font-size:12.5px;margin-top:2px}
   .ex .sets{font-variant-numeric:tabular-nums;font-weight:800;font-size:16px;color:var(--effort);white-space:nowrap;direction:ltr;text-align:left}
   .card.c .ex .sets{color:var(--ride)}
-  .learn{display:inline-block;direction:rtl;font-size:11px;font-weight:800;letter-spacing:0;
+  .learn{display:inline-block;direction:rtl;font-size:12.5px;font-weight:800;letter-spacing:0;
          background:var(--recover-soft);color:var(--recover);padding:2px 8px;border-radius:999px;margin-inline-start:8px;vertical-align:middle}
   .ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
 
@@ -166,9 +167,9 @@
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px}
   .panel h3{font-size:17px;font-weight:800;margin-bottom:4px}
   .panel .sub{font-size:13.5px;color:var(--faint);margin-bottom:14px}
-  .panel ul li{display:flex;gap:11px;padding:9px 0;font-size:14.5px;border-bottom:1px solid var(--line);align-items:flex-start}
+  .panel ul li{position:relative;padding:9px 19px 9px 0;font-size:14.5px;line-height:1.65;border-bottom:1px solid var(--line)}
   .panel ul li:last-child{border-bottom:0}
-  .panel ul li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--recover);margin-top:9px}
+  .panel ul li::before{content:"";position:absolute;inset-block-start:17px;right:0;width:8px;height:8px;border-radius:50%;background:var(--recover)}
   .panel .t{font-size:15px}
   .panel small{display:block;color:var(--muted);font-size:13px;margin-top:3px;line-height:1.55}
   .panel.warm ul li::before{background:var(--effort)}
@@ -177,21 +178,22 @@
   .why h3{font-size:17px;font-weight:800;margin-bottom:12px}
   .why ul{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px}
   @media (max-width:640px){.why ul{grid-template-columns:1fr}}
-  .why li{font-size:14.5px;color:var(--muted);display:flex;gap:9px;align-items:flex-start}
+  .why li{font-size:14.5px;line-height:1.7;color:var(--muted);position:relative;padding-right:22px}
   .why li b{color:var(--ink);font-weight:700}
-  .why li::before{content:"→";color:var(--effort);font-weight:800;flex:none}
+  .why li::before{content:"←";position:absolute;inset-block-start:0;right:0;color:var(--effort);font-weight:800}
 
   .foot{margin-top:30px;padding:18px 20px;border-radius:var(--r);background:var(--surface-2);border:1px solid var(--line);font-size:14px;color:var(--muted);line-height:1.75}
   .foot b{color:var(--ink)}
 
   /* ===== سجل الأوزان والعدّات ===== */
-  .log{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:11px}
-  .log .prev{font:inherit;font-size:12.5px;font-weight:700;line-height:1.4;direction:rtl;text-align:right;
+  /* شبكة: زرّ آخر مرة بسطر لحاله، وخانتَي الوزن والعدّات جنب بعض بنفس العرض */
+  .log{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}
+  .log .prev{grid-column:1/-1;font:inherit;font-size:12.5px;font-weight:700;line-height:1.4;direction:rtl;text-align:right;
              color:var(--recover);background:var(--recover-soft);border:1px solid var(--recover);
              border-radius:9px;padding:9px 12px;min-height:40px;cursor:pointer;
              display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px 8px}
   .log .prev .tapme{background:var(--recover);color:#fff;border-radius:999px;
-                    padding:2px 9px;font-size:11.5px;font-weight:800;white-space:nowrap}
+                    padding:2px 9px;font-size:12.5px;font-weight:800;white-space:nowrap}
   .log .prev:hover{filter:brightness(1.06)}
   .log .prev:active{transform:translateY(1px)}
   .log .prev:focus-visible{outline:2px solid var(--recover);outline-offset:2px}
@@ -199,16 +201,18 @@
   .log .prev.none:hover{border-color:var(--line)}
   .log .v{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block;
           font-weight:800;color:var(--ink)}
-  .log .f{display:flex;align-items:center;gap:7px;background:var(--surface-2);
+  .log .f{display:flex;align-items:center;gap:7px;min-width:0;background:var(--surface-2);
           border:1px solid var(--line);border-radius:9px;padding:0 11px;min-height:42px}
   .log .f:focus-within{border-color:var(--effort);box-shadow:0 0 0 3px var(--effort-soft)}
   .log .f > span{font-size:12px;color:var(--faint);font-weight:700;white-space:nowrap}
   .log input{border:0;background:transparent;color:var(--ink);font:inherit;font-size:15.5px;font-weight:800;
-             padding:9px 0;width:72px;min-width:0;direction:ltr;text-align:left;
+             padding:9px 0;flex:1 1 auto;width:100%;min-width:0;direction:ltr;text-align:left;
              font-variant-numeric:tabular-nums;border-radius:4px}
   .log input::placeholder{color:var(--faint);font-weight:400}
   .log input:focus{outline:none}
-  .log input.r{width:118px}
+  .log input.r{width:100%}
+  /* على الشاشات الأوسع: خانات بعرض معقول بدل ما تتمطّط */
+  @media (min-width:560px){ .log{grid-template-columns:170px 170px 1fr} }
 
   .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
   .tools button{font:inherit;font-size:13px;font-weight:700;color:var(--muted);background:var(--surface);
@@ -271,9 +275,11 @@
     .hist table[data-mode="day"] thead th:nth-child(2){width:27%}
   }
 
-  /* ===== أزرار ثابتة فوق ===== */
-  .topbtns{position:fixed;inset-block-start:12px;inset-inline-end:12px;z-index:9;
-           display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;max-width:calc(100% - 24px)}
+  /* ===== شريط الأزرار فوق — داخل تدفّق الصفحة، ما بيغطّي إشي ===== */
+  .topbtns{position:sticky;inset-block-start:0;z-index:9;
+           display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;
+           padding:10px clamp(16px,4vw,40px);
+           background:var(--bg);border-bottom:1px solid var(--line)}
   .topbtns .tt{position:static;inset:auto;box-shadow:var(--shadow)}
   .gym-btn{background:var(--surface);border:1px solid var(--line);color:var(--muted);
            border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;
@@ -294,9 +300,9 @@
 
   /* ===== بطاقة اليوم / طيّ باقي الأيام ===== */
   .card .top{cursor:pointer;user-select:none}
-  .card .top .fold{margin-inline-start:8px;color:var(--faint);font-size:13px;font-weight:700;
-                   transition:transform .15s ease;display:inline-block}
-  .card.folded .top .fold{transform:rotate(-90deg)}
+  .card .top .fold{margin-inline-start:auto;display:inline-flex;align-items:center;gap:6px;
+                   color:var(--muted);font-size:12.5px;font-weight:700;white-space:nowrap;
+                   background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
   .card.folded .ex,.card.folded .plan,.card.folded > .callout{display:none}
   .card.today{border-color:var(--effort);box-shadow:0 0 0 2px var(--effort-soft),var(--shadow)}
   .card.c.today{border-color:var(--ride)}
@@ -379,8 +385,8 @@
   <div class="sec-title">أيام النادي — التفاصيل</div>
 
   <div class="reader ref" style="margin-bottom:16px">
-    <span class="big">4 × 8–10</span>
-    <span class="exp">يعني <b>4 جولات</b>، كل جولة <b>8 إلى 10 عدّات</b>. الراحة بين الجولات: التمارين الكبيرة (Squat / Bench / Deadlift / Pull-up) ريّح <b>2–3 دقايق</b>، والتمارين الصغيرة (Curl / Triceps Pushdown / Face Pull) <b>دقيقة–دقيقة ونص</b>. كل تمرين نادي ~<b>ساعة</b>.</span>
+    <span class="big"><span class="num">4 × 8–10</span></span>
+    <span class="exp">يعني <b><span class="num">4</span> جولات</b>، كل جولة <b><span class="num">8</span> إلى <span class="num">10</span> عدّات</b>. الراحة بين الجولات: التمارين الكبيرة <span class="ltr">(Squat / Bench / Deadlift / Pull-up)</span> ريّح <b><span class="num">2–3</span> دقايق</b>، والتمارين الصغيرة <span class="ltr">(Curl / Triceps Pushdown / Face Pull)</span> ريّح <b>دقيقة إلى دقيقة ونص</b>. كل تمرين نادي ~<b>ساعة</b>.</span>
   </div>
 
   <div class="callout ref" style="margin-bottom:16px">
@@ -1162,8 +1168,14 @@
       var isToday = parseInt(card.getAttribute('data-day'), 10) === today;
       var top = card.querySelector('.top');
       var arrow = document.createElement('span');
-      arrow.className = 'fold'; arrow.textContent = '▾'; arrow.setAttribute('aria-hidden','true');
+      arrow.className = 'fold';
+      arrow.innerHTML = '<span class="ftx"></span><span class="fcar" aria-hidden="true"></span>';
       top.appendChild(arrow);
+      function setFoldLabel(){
+        var folded = card.classList.contains('folded');
+        arrow.querySelector('.ftx').textContent = folded ? 'شوف التمارين' : 'إخفاء التمارين';
+        arrow.querySelector('.fcar').textContent = folded ? '▾' : '▴';
+      }
 
       if(isToday){
         card.classList.add('today');
@@ -1176,7 +1188,8 @@
 
       top.setAttribute('role','button');
       top.setAttribute('tabindex','0');
-      function toggle(){ card.classList.toggle('folded'); }
+      setFoldLabel();
+      function toggle(){ card.classList.toggle('folded'); setFoldLabel(); }
       top.addEventListener('click', function(ev){
         if(ev.target.closest && ev.target.closest('input,button,.log,.setrow')) return;
         toggle();
