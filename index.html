@@ -244,11 +244,11 @@
   .hswitch button:hover{color:var(--ink)}
   .hswitch button.on{background:var(--effort);border-color:var(--effort);color:#fff}
   .hswitch button:focus-visible{outline:2px solid var(--effort);outline-offset:2px}
-  .hist tr.er th{background:var(--recover-soft);color:var(--recover);
-                 display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
-  .hist .exn{direction:ltr;unicode-bidi:isolate;font-weight:800;font-size:14px;color:var(--ink)}
+  .hist tr.er th{background:var(--recover-soft);color:var(--recover);white-space:normal}
+  .hist .exn{direction:ltr;unicode-bidi:isolate;font-weight:800;font-size:14px;color:var(--ink);
+             display:inline-block;margin-left:12px}
   .hist .exs{font-size:12.5px;font-weight:700;color:var(--recover);
-             font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+             font-variant-numeric:tabular-nums}
   .hist td.dlt{font-weight:800;font-size:12.5px;direction:rtl;text-align:right;
                font-variant-numeric:tabular-nums;white-space:nowrap}
   .hist td.dlt.up{color:var(--recover)}
@@ -257,6 +257,19 @@
   .hist td.nm{direction:ltr;text-align:left;font-weight:700}
   .hist td.v{font-variant-numeric:tabular-nums;direction:ltr;text-align:left;color:var(--muted)}
   .hist .empty{color:var(--faint)}
+  @media (max-width:640px){
+    .hist th,.hist td{padding:7px 6px;font-size:12.5px}
+    .hist td.v,.hist td.dlt,.hist td.nm{white-space:normal}
+    .hist td.dlt{font-size:12px}
+    .hist thead th{font-size:11px;letter-spacing:.02em}
+    /* أعمدة بعرض ثابت عشان كلشي يبيّن بدون جرّ */
+    .hist table{table-layout:fixed}
+    .hist table[data-mode="ex"] thead th:nth-child(1){width:27%}
+    .hist table[data-mode="ex"] thead th:nth-child(2){width:19%}
+    .hist table[data-mode="ex"] thead th:nth-child(3){width:20%}
+    .hist table[data-mode="day"] thead th:nth-child(1){width:44%}
+    .hist table[data-mode="day"] thead th:nth-child(2){width:27%}
+  }
 
   /* ===== أزرار ثابتة فوق ===== */
   .topbtns{position:fixed;inset-block-start:12px;inset-inline-end:12px;z-index:9;
@@ -787,7 +800,7 @@
       /* عدد الجولات مختلف → مجموع العدّات مش قابل للمقارنة، ما نحكم تقدّم ولا تراجع */
       var ps = nSets(prev.r), cs = nSets(cur.r);
       if(ps && cs && ps !== cs){
-        return { cls: 'same', txt: 'عدد الجولات مختلف (' + ps + ' ← ' + cs + ')' };
+        return { cls: 'same', txt: 'الجولات: كانت ' + ps + '، صارت ' + cs };
       }
       var pr = sumReps(prev.r), cr = sumReps(cur.r);
       if(pr !== null && cr !== null && pr !== cr){
@@ -810,6 +823,15 @@
       var td = cell('لسا ما سجّلت إشي — سجّل أرقامك بأول تمرين وارجع لهون.', 'empty');
       td.colSpan = span; tr.appendChild(td); tb.appendChild(tr);
     }
+    /* "10,8,8" ← بالتخزين · "10, 8, 8" ← بالعرض، عشان يلتف السطر عالموبايل */
+    function fvals(v){
+      return v ? String(v).replace(/\s*,\s*/g, ', ') : '—';
+    }
+    /* 2026-08-09 ← بالتخزين · 09/08/26 ← بالعرض (سنة قصيرة عشان عرض الموبايل) */
+    function fdate(d){
+      var p = String(d).split('-');
+      return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0].slice(2) : d;
+    }
     function entriesOf(id){
       return (db[id] || [])
         .filter(function(e){ return e && e.d && (e.w || e.r); })
@@ -826,9 +848,12 @@
         any = true;
         var first = list[0], last = list[list.length - 1];
         var fw = topW(first.w), lw = topW(last.w);
-        var summary = list.length + ' تمرين';
-        if(list.length > 1 && fw !== null && lw !== null && fw !== lw){
-          summary = nice(fw) + ' → ' + nice(lw) + ' كغ  ·  ' + list.length + ' تمرين';
+        var n = list.length;
+        var times = n === 1 ? 'مرة وحدة' : n === 2 ? 'مرتين'
+                  : n <= 10 ? n + ' مرات' : n + ' مرة';
+        var summary = 'سجّلتها ' + times;
+        if(n > 1 && fw !== null && lw !== null && fw !== lw){
+          summary = 'الوزن من ' + nice(fw) + ' إلى ' + nice(lw) + ' كغ · سجّلتها ' + times;
         }
         var hr = document.createElement('tr'); hr.className = 'dr er';
         var h = cell('', null, 'th'); h.colSpan = 4;
@@ -843,9 +868,9 @@
         newest.forEach(function(e, i){
           var d = delta(newest[i + 1] || null, e);
           var tr = document.createElement('tr');
-          tr.appendChild(cell(e.d, 'v'));
-          tr.appendChild(cell(e.w || '—', 'v'));
-          tr.appendChild(cell(e.r || '—', 'v'));
+          tr.appendChild(cell(fdate(e.d), 'v'));
+          tr.appendChild(cell(fvals(e.w), 'v'));
+          tr.appendChild(cell(fvals(e.r), 'v'));
           var dc = cell(d.txt, 'dlt ' + d.cls);
           if(d.tip) dc.title = d.tip;
           tr.appendChild(dc);
@@ -868,13 +893,13 @@
       if(!dates.length){ emptyRow(3); return; }
       dates.forEach(function(d){
         var hr = document.createElement('tr'); hr.className = 'dr';
-        var h = cell(d, null, 'th'); h.colSpan = 3;
+        var h = cell(fdate(d), null, 'th'); h.colSpan = 3;
         hr.appendChild(h); tb.appendChild(hr);
         byDate[d].forEach(function(x){
           var tr = document.createElement('tr');
           tr.appendChild(cell(NAMES[x.id] || x.id, 'nm'));
-          tr.appendChild(cell(x.e.w || '—', 'v'));
-          tr.appendChild(cell(x.e.r || '—', 'v'));
+          tr.appendChild(cell(fvals(x.e.w), 'v'));
+          tr.appendChild(cell(fvals(x.e.r), 'v'));
           tb.appendChild(tr);
         });
       });
@@ -882,6 +907,7 @@
 
     function renderHist(){
       if(!tb) return;
+      if(tb.parentElement) tb.parentElement.setAttribute('data-mode', MODE);
       while(tb.firstChild) tb.removeChild(tb.firstChild);
       if(MODE === 'day') renderByDay(); else renderByEx();
     }
