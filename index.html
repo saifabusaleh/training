@@ -227,6 +227,8 @@
   .tools input[type="file"]:focus-visible + .fbtn,.tools .fbtn:focus-within{outline:2px solid var(--effort);outline-offset:2px}
   .tools .st{font-size:13px;font-weight:700;color:var(--recover);min-height:20px}
   .tools .info{font-size:12.5px;color:var(--faint);font-weight:400;flex-basis:100%;line-height:1.6}
+  /* كل شرح أداة بسطر لحاله بدل فقرة طويلة ملزوقة — بدون صندوق عشان ما يشبه خانة كتابة */
+  .tools .info.exp b{color:var(--ink)}
   .tools textarea{display:none;width:100%;min-height:80px;font:inherit;font-size:12px;direction:ltr;
                   text-align:left;background:var(--surface-2);color:var(--ink);
                   border:1px solid var(--line);border-radius:9px;padding:10px}
@@ -249,17 +251,20 @@
   .hswitch button.on{background:var(--effort);border-color:var(--effort);color:#fff}
   .hswitch button:focus-visible{outline:2px solid var(--effort);outline-offset:2px}
   .hist tr.er th{background:var(--recover-soft);color:var(--recover);white-space:normal}
+  /* اسم التمرين بسطر لحاله والشرح بسطر تحته — عشان ما يتلخبط العربي بالإنجليزي */
   .hist .exn{direction:ltr;unicode-bidi:isolate;font-weight:800;font-size:14px;color:var(--ink);
-             display:inline-block;margin-left:12px}
-  .hist .exs{font-size:12.5px;font-weight:700;color:var(--recover);
+             display:block;text-align:right}
+  .hist .exs{display:block;margin-top:3px;font-size:12.5px;font-weight:700;color:var(--recover);
              font-variant-numeric:tabular-nums}
   .hist td.dlt{font-weight:800;font-size:12.5px;direction:rtl;text-align:right;
                font-variant-numeric:tabular-nums;white-space:nowrap}
   .hist td.dlt.up{color:var(--recover)}
   .hist td.dlt.down{color:var(--effort)}
   .hist td.dlt.same,.hist td.dlt.first{color:var(--faint);font-weight:400}
-  .hist td.nm{direction:ltr;text-align:left;font-weight:700}
-  .hist td.v{font-variant-numeric:tabular-nums;direction:ltr;text-align:left;color:var(--muted)}
+  /* الأرقام والأسماء إنجليزي (ltr) بس بتضلّ ملزوقة باليمين تحت عنوان عمودها بالظبط */
+  .hist td.nm{direction:ltr;unicode-bidi:isolate;text-align:right;font-weight:700}
+  .hist td.v{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;
+             text-align:right;color:var(--muted)}
   .hist .empty{color:var(--faint)}
   @media (max-width:640px){
     .hist th,.hist td{padding:7px 6px;font-size:12.5px}
@@ -268,9 +273,9 @@
     .hist thead th{font-size:11px;letter-spacing:.02em}
     /* أعمدة بعرض ثابت عشان كلشي يبيّن بدون جرّ */
     .hist table{table-layout:fixed}
-    .hist table[data-mode="ex"] thead th:nth-child(1){width:27%}
-    .hist table[data-mode="ex"] thead th:nth-child(2){width:19%}
-    .hist table[data-mode="ex"] thead th:nth-child(3){width:20%}
+    .hist table[data-mode="ex"] thead th:nth-child(1){width:23%}
+    .hist table[data-mode="ex"] thead th:nth-child(2){width:21%}
+    .hist table[data-mode="ex"] thead th:nth-child(3){width:25%}
     .hist table[data-mode="day"] thead th:nth-child(1){width:44%}
     .hist table[data-mode="day"] thead th:nth-child(2){width:27%}
   }
@@ -422,9 +427,9 @@
     <button type="button" id="lgsync">☁ فعّل المزامنة السحابية</button>
     <span class="st" id="lgst"></span>
     <span class="info" id="lginfo"></span>
-    <span class="info"><b>⬇︎ خُذ نسخة احتياطيّة</b> = بينزّل ملف صغير فيه كل سجلّك، خزّنه بتطبيق «الملفات». مرّة بالأسبوع بتكفي.
-      <b>⬆︎ ارجاع سجل من نسخة</b> = العكس، بترجّع سجل من ملف نزّلته قبل. ما بتحتاجه إلا إذا راحت الأرقام.
-      <b>☁ المزامنة السحابية</b> = سجلّك بينحفظ بالسحابة كمان، وبتشوفه من أي جهاز بعد ما تكتب نفس كلمة السر عليه.</span>
+    <span class="info exp"><b>⬇︎ خُذ نسخة احتياطيّة</b> — بينزّل ملف صغير فيه كل سجلّك، خزّنه بتطبيق «الملفات». مرّة بالأسبوع بتكفي.</span>
+    <span class="info exp"><b>⬆︎ ارجاع سجل من نسخة</b> — العكس: بترجّع سجل من ملف نزّلته قبل. ما بتحتاجه إلا إذا راحت الأرقام.</span>
+    <span class="info exp"><b>☁ المزامنة السحابية</b> — سجلّك بينحفظ بالسحابة كمان، وبتشوفه من أي جهاز بعد ما تكتب نفس كلمة السر عليه.</span>
     <textarea id="lgdump" readonly aria-label="نسخة السجل"></textarea>
   </div>
 
@@ -1053,9 +1058,16 @@
         });
       });
       var ds = Object.keys(days).sort();
-      info.textContent = ds.length
-        ? 'محفوظ عندك: ' + lines + ' سطر على ' + ds.length + ' يوم تمرين · آخر يوم ' + ds[ds.length-1]
-        : 'لسا فاضي — أول ما تكتب رقم بيتحفّظ لحاله.';
+      if(ds.length){
+        info.textContent = '';
+        info.appendChild(document.createTextNode(
+          'محفوظ عندك: ' + lines + ' سطر على ' + ds.length + ' يوم تمرين · آخر يوم '));
+        var dsp = document.createElement('span');
+        dsp.className = 'num'; dsp.textContent = ds[ds.length-1];
+        info.appendChild(dsp);
+      } else {
+        info.textContent = 'لسا فاضي — أول ما تكتب رقم بيتحفّظ لحاله.';
+      }
     }
     renderInfo();
 
