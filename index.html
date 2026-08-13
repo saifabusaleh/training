@@ -10,6 +10,7 @@
     --ink:#20242b; --muted:#4b525d; --faint:#69707b; --line:#e4e2dc;
     --effort:#c1531c; --effort-soft:#f7e9df;
     --recover:#2c7f72; --recover-soft:#e2efeb;
+    --on-recover:#ffffff;
     --ride:#31659f; --ride-soft:#e3ecf5;
     --shadow:0 1px 2px rgba(20,24,31,.04),0 6px 20px rgba(20,24,31,.06);
     --r:16px;
@@ -20,6 +21,7 @@
       --ink:#eceef1; --muted:#b8bfc9; --faint:#98a0ac; --line:#2c3037;
       --effort:#ef8a4f; --effort-soft:#3a2519;
       --recover:#5cc0af; --recover-soft:#17322d;
+      --on-recover:#14161a;
       --ride:#77a6da; --ride-soft:#17293c;
       --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
     }
@@ -29,6 +31,7 @@
     --ink:#eceef1; --muted:#b8bfc9; --faint:#98a0ac; --line:#2c3037;
     --effort:#ef8a4f; --effort-soft:#3a2519;
     --recover:#5cc0af; --recover-soft:#17322d;
+    --on-recover:#14161a;
     --ride:#77a6da; --ride-soft:#17293c;
     --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
   }
@@ -37,6 +40,7 @@
     --ink:#20242b; --muted:#4b525d; --faint:#69707b; --line:#e4e2dc;
     --effort:#c1531c; --effort-soft:#f7e9df;
     --recover:#2c7f72; --recover-soft:#e2efeb;
+    --on-recover:#ffffff;
     --ride:#31659f; --ride-soft:#e3ecf5;
     --shadow:0 1px 2px rgba(20,24,31,.04),0 6px 20px rgba(20,24,31,.06);
   }
@@ -132,9 +136,10 @@
   .ex .name{font-weight:700;font-size:15.5px}
   .ex .name small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:4px;line-height:1.5}
   /* اسم التمرين بالإنجليزي — هذا اللي بتشوفه على أجهزة النادي */
-  .t{display:block;direction:ltr;unicode-bidi:isolate;text-align:left;
+  /* الاسم إنجليزي (ltr) بس بيضلّ ملزوق باليمين متل الشرح العربي اللي تحته بالظبط */
+  .t{display:block;direction:ltr;unicode-bidi:isolate;text-align:right;
      font-size:16.5px;font-weight:800;letter-spacing:-.005em;color:var(--ink)}
-  .en{display:block;direction:ltr;unicode-bidi:isolate;text-align:left;
+  .en{display:block;direction:ltr;unicode-bidi:isolate;text-align:right;
       font-size:13px;font-weight:700;letter-spacing:.01em;color:var(--effort);margin-top:3px}
   .panel .en,.why .en{color:var(--recover);font-size:12.5px;margin-top:2px}
   .ex .sets{font-variant-numeric:tabular-nums;font-weight:800;font-size:16px;color:var(--effort);white-space:nowrap;direction:ltr;text-align:left}
@@ -191,8 +196,11 @@
   .log .prev{grid-column:1/-1;font:inherit;font-size:12.5px;font-weight:700;line-height:1.4;direction:rtl;text-align:right;
              color:var(--recover);background:var(--recover-soft);border:1px solid var(--recover);
              border-radius:9px;padding:9px 12px;min-height:40px;cursor:pointer;
-             display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px 8px}
-  .log .prev .tapme{background:var(--recover);color:#fff;border-radius:999px;
+             display:flex;align-items:center;justify-content:space-between;gap:10px}
+  /* النص بيمين الشريط والزرّ بيضلّ بنفس المكان على الشمال — ما بيقفز */
+  .log .prev .pvt{flex:1 1 auto;min-width:0;text-align:right}
+  /* لون النص جوّا الزرّ = لون خلفية الصفحة، عشان يضلّ مقروء بالفاتح وبالغامق */
+  .log .prev .tapme{flex:0 0 auto;background:var(--recover);color:var(--on-recover);border-radius:999px;
                     padding:2px 9px;font-size:12.5px;font-weight:800;white-space:nowrap}
   .log .prev:hover{filter:brightness(1.06)}
   .log .prev:active{transform:translateY(1px)}
@@ -650,7 +658,7 @@
       for(var i = 0; i < a.length; i++) if(a[i] && a[i].d === TD) return a[i];
       return null;
     }
-    function label(e, unit){
+    function label(e, unit, runit){
       /* أوزان متعدّدة → نعرضها مقرونة بعدّاتها: 50×10 · 55×8 · 55×8 */
       var ws = nums(e.w), rs = nums(e.r);
       if(ws.length > 1 && rs.length){
@@ -658,11 +666,12 @@
         for(var i = 0; i < rs.length; i++){
           out.push(nice(ws[i] !== undefined ? ws[i] : ws[ws.length - 1]) + '×' + nice(rs[i]));
         }
-        return out.join('  ·  ') + ' ' + unit;
+        /* اللاحقة بتفسّر الأرقام: أي واحد الوزن وأي واحد العدّات */
+        return out.join('  ·  ') + ' (' + unit + '×' + (runit || 'عدّات') + ')';
       }
       var parts = [];
       if(e.w) parts.push(e.w + ' ' + unit);
-      if(e.r) parts.push(e.r);
+      if(e.r) parts.push(e.r + ' ' + (runit || 'عدّات'));
       return parts.join('  ·  ');
     }
 
@@ -695,10 +704,17 @@
       chip.type = 'button';
       chip.className = 'prev' + (p ? '' : ' none');
       if(p){
-        chip.appendChild(document.createTextNode('آخر مرة ' + p.d.slice(5) + ': '));
+        var pvt = document.createElement('span'); pvt.className = 'pvt';
+        pvt.appendChild(document.createTextNode('آخر مرة '));
+        /* التاريخ لازم يكون معزول ltr — بدونه كان بينقرا مقلوب */
+        var dsp = document.createElement('span'); dsp.className = 'num';
+        dsp.textContent = p.d.slice(5);
+        pvt.appendChild(dsp);
+        pvt.appendChild(document.createTextNode(': '));
         var v = document.createElement('span'); v.className = 'v';
-        v.textContent = label(p, wl);
-        chip.appendChild(v);
+        v.textContent = label(p, wl, rl);
+        pvt.appendChild(v);
+        chip.appendChild(pvt);
         var tap = document.createElement('span'); tap.className = 'tapme';
         tap.textContent = '↩ انسخ';
         chip.appendChild(tap);
