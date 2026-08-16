@@ -198,7 +198,11 @@
              border-radius:9px;padding:9px 12px;min-height:40px;cursor:pointer;
              display:flex;align-items:center;justify-content:space-between;gap:10px}
   /* النص بيمين الشريط والزرّ بيضلّ بنفس المكان على الشمال — ما بيقفز */
-  .log .prev .pvt{flex:1 1 auto;min-width:0;text-align:right}
+  .log .prev .pvt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px;align-items:flex-end}
+  .log .prev .pv-r{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:baseline;gap:2px 6px}
+  .log .prev .pv-d{font-weight:800;margin-bottom:1px}
+  .log .prev .pv-h{font-size:12.5px;opacity:.85}
+  .log .prev .num{font-weight:800}
   /* لون النص جوّا الزرّ = لون خلفية الصفحة، عشان يضلّ مقروء بالفاتح وبالغامق */
   .log .prev .tapme{flex:0 0 auto;background:var(--recover);color:var(--on-recover);border-radius:999px;
                     padding:2px 9px;font-size:12.5px;font-weight:800;white-space:nowrap}
@@ -704,16 +708,36 @@
       chip.type = 'button';
       chip.className = 'prev' + (p ? '' : ' none');
       if(p){
+        /* الشريط صار أسطر عربية طبيعية وكل رقم معزول لحاله.
+           قبل هيك كان سطر ltr واحد بينكسر بنص الجملة فتتبعثر الوحدة عن رقمها. */
         var pvt = document.createElement('span'); pvt.className = 'pvt';
-        pvt.appendChild(document.createTextNode('آخر مرة '));
-        /* التاريخ لازم يكون معزول ltr — بدونه كان بينقرا مقلوب */
-        var dsp = document.createElement('span'); dsp.className = 'num';
-        dsp.textContent = p.d.slice(5);
-        pvt.appendChild(dsp);
-        pvt.appendChild(document.createTextNode(': '));
-        var v = document.createElement('span'); v.className = 'v';
-        v.textContent = label(p, wl, rl);
-        pvt.appendChild(v);
+        var pvRow = function(cls){
+          var r = document.createElement('span'); r.className = 'pv-r' + (cls ? ' ' + cls : '');
+          pvt.appendChild(r); return r;
+        };
+        var pvNum = function(r, t){
+          var s = document.createElement('span'); s.className = 'num'; s.textContent = t; r.appendChild(s);
+        };
+        var pvWord = function(r, t){
+          var s = document.createElement('span'); s.textContent = t; r.appendChild(s);
+        };
+
+        var head = pvRow('pv-d');
+        pvWord(head, 'آخر مرة');
+        pvNum(head, p.d.slice(5));
+
+        var pws = nums(p.w), prs = nums(p.r);
+        if(pws.length > 1 && prs.length){
+          /* أوزان متعدّدة: كل جولة زوج معزول لحاله، والشرح بسطر تحت */
+          var rp = pvRow();
+          for(var pi = 0; pi < prs.length; pi++){
+            pvNum(rp, nice(pws[pi] !== undefined ? pws[pi] : pws[pws.length - 1]) + '×' + nice(prs[pi]));
+          }
+          pvWord(pvRow('pv-h'), wl + ' × ' + rl);
+        } else {
+          if(p.w){ var rw = pvRow(); pvNum(rw, p.w); pvWord(rw, wl); }
+          if(p.r){ var rr = pvRow(); pvNum(rr, p.r); pvWord(rr, rl); }
+        }
         chip.appendChild(pvt);
         var tap = document.createElement('span'); tap.className = 'tapme';
         tap.textContent = '↩ انسخ';
