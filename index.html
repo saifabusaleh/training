@@ -660,6 +660,17 @@
       }
       return best;
     }
+    /* أثقل وزن مسجّل على التمرين قبل اليوم — لتهنئة الرقم القياسي */
+    function bestBefore(id){
+      var a = db[id] || [], best = null;
+      for(var i = 0; i < a.length; i++){
+        var e = a[i];
+        if(!e || e.d === TD) continue;
+        var w = topW(e.w);
+        if(w !== null && (best === null || w > best)) best = w;
+      }
+      return best;
+    }
     function todayOf(id){
       var a = db[id] || [];
       for(var i = 0; i < a.length; i++) if(a[i] && a[i].d === TD) return a[i];
@@ -756,7 +767,12 @@
         }
         save();
         renderInfo();
-        if(storeOK) msg('✓ محفوظ');
+        if(storeOK){
+          var tw = topW(w), bw = bestBefore(id);
+          if(tw !== null && bw !== null && tw > bw)
+            msg('🎉 رقم جديد — أثقل من كل مرة قبل (' + nice(bw) + ' كغ)');
+          else msg('✓ محفوظ');
+        }
       }
       fw.input.addEventListener('input', commit);
       fr.input.addEventListener('input', commit);
