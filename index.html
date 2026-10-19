@@ -465,7 +465,7 @@
   </div>
 
   <div class="card e" data-day="1">
-    <div class="top"><span class="when">الاثنين</span><h3>أرجل · تمرين ثقيل</h3><span class="dur">~<span class="num">60</span> دقيقة</span></div>
+    <div class="top"><span class="when">الاثنين</span><h3>أرجل · تمرين ثقيل</h3><span class="dur">~<span class="num">65</span> دقيقة</span></div>
     <ul class="ex">
       <li><span class="name"><span class="t">Warm-up + Hip Mobility</span><small>ضروري قبل السكوات الثقيل · قعدتك مقصّرة قابض الورك</small></span><span class="sets">6–8 دق</span></li>
       <li><span class="name"><span class="t">Dowel Hip Hinge <span class="learn">تسخين النمط</span></span><small>بعصا مكنسة، بلا وزن · اعملها قبل ما تلمس الدمبل — التفاصيل بالصندوق تحت</small></span><span class="sets">10 عدّات</span></li>
@@ -473,6 +473,7 @@
       <li data-log="rdl"><span class="name"><span class="t">Romanian Deadlift (Dumbbell)</span><small><b>خلفية الفخذ (هامسترينغ) + المؤخرة</b> — وأسفل الظهر بيشتغل مثبّت · ابدأ خفيف جداً واقرا قواعد الصندوق تحت قبل أول جولة</small></span><span class="sets">3 × 8–10</span></li>
       <li data-log="bss"><span class="name"><span class="t">Bulgarian Split Squat</span><small><b>المؤخرة + مقدّمة الفخذ</b> — رجل رجل · ميّل صدرك لقدّام تاخد المؤخرة الشغل أكثر</small></span><span class="sets">3 × 10 / رجل</span></li>
       <li data-log="legcurl"><span class="name"><span class="t">Leg Curl</span><small><b>خلفية الفخذ (هامسترينغ)</b> — عن طريق ثني الركبة · بتكمّل الـRDL اللي بتشتغلها من الورك</small></span><span class="sets">3 × 10–12</span></li>
+      <li data-log="backext"><span class="name"><span class="t">Back Extension</span><small><b>أسفل الظهر + المؤخرة</b> — لقوة تحمّل أسفل الظهر مع قعدة المكتب · خفيف، مش للتثقيل</small></span><span class="sets">2 × 12–15</span></li>
       <li data-log="calf"><span class="name"><span class="t">Calf Raise</span><small><b>السمانة</b> — بطة الرجل، تحت الركبة من ورا</small></span><span class="sets">3 × 15</span></li>
       <li data-log="totalab"><span class="name"><span class="t">Total Abdominal Machine</span><small><b>البطن الأمامي</b> — التمرين الوحيد للبطن بوزن يتزاد، فبتقدر تقيس تقدّمك · <b>حسّيت ضغط بأسفل ظهرك؟ وقّف وارجع للبلانك</b></small></span><span class="sets">3 × 12–15</span></li>
     </ul>
@@ -790,9 +791,8 @@
     });
 
     /* تمارين انشالت من البرنامج — سجلّها القديم بيضل بيبين */
-    var OLD = { backext: 'Back Extension' };
     Object.keys(db).forEach(function(id){
-      if(ORDER.indexOf(id) < 0){ ORDER.push(id); NAMES[id] = OLD[id] || id; }
+      if(ORDER.indexOf(id) < 0){ ORDER.push(id); NAMES[id] = id; }
     });
 
     /* ===== السجل الكامل ===== */
