@@ -1388,6 +1388,22 @@
       li.appendChild(row);
     });
   })();
+  /* ===== الصفحة ضلّت مفتوحة ليوم تاني؟ =====
+     تاريخ اليوم (TD) بينحسب مرة وحدة عند التحميل. إذا التبويب ضلّ مفتوح
+     بالتلفون لليوم التالي، أي تسجيل جديد بينكتب على تاريخ أمس، وبطاقة
+     «اليوم» وشريط «آخر مرة» وعدّاد الجولات كلهم بيضلّوا عالقديم.
+     أول ما ترجع للصفحة بيوم جديد — منعيد تحميلها (كل شي محفوظ أصلاً). */
+  (function(){
+    function dstr(){
+      var d = new Date();
+      function p(n){ return (n < 10 ? '0' : '') + n; }
+      return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());
+    }
+    var opened = dstr();
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState === 'visible' && dstr() !== opened) location.reload();
+    });
+  })();
 </script>
 </body>
 </html>
