@@ -1138,6 +1138,8 @@
       return fetch(SB_URL + '/rest/v1/rpc/' + fn, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
+        /* keepalive: الطلب بيكمّل حتى لو سكّرت الصفحة أو قفلت الشاشة */
+        keepalive: true,
         body: JSON.stringify(body)
       }).then(function(res){
         if(!res.ok) throw new Error('HTTP ' + res.status);
@@ -1158,12 +1160,12 @@
     function pushCloud(){
       if(!syncId) return;
       clearTimeout(pushT);
-      pushT = setTimeout(pushNow, 1200);
+      pushT = setTimeout(function(){ pushT = null; pushNow(); }, 1200);
     }
 
     /* نفّذ بعد ما يخلص الرفع — وإذا ما في نت، كمّل بعد ثانيتين على الأكثر */
     function afterPush(cb){
-      clearTimeout(pushT);
+      clearTimeout(pushT); pushT = null;
       var p = pushNow();
       if(!p){ setTimeout(cb, 300); return; }
       var done = false;
@@ -1171,6 +1173,18 @@
       p.then(go, go);
       setTimeout(go, 2500);
     }
+
+    /* قفلت الشاشة أو طلعت من الصفحة والرفع المؤجّل لسا ما صار؟ ابعته فوراً —
+       بالخلفية المؤقّتات بتنقتل والجولة الأخيرة ما بتوصل للسحابة */
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState === 'hidden' && pushT){
+        clearTimeout(pushT); pushT = null;
+        pushNow();
+      }
+    });
+
+    /* رجع النت (مثلاً طلعت من قبو النادي) — ارفع اللي علق */
+    window.addEventListener('online', function(){ pushNow(); });
 
     function pullCloud(){
       if(!syncId) return;
