@@ -1186,6 +1186,17 @@
     /* رجع النت (مثلاً طلعت من قبو النادي) — ارفع اللي علق */
     window.addEventListener('online', function(){ pushNow(); });
 
+    /* رجعت لتبويب مفتوح من قبل؟ اسحب من السحابة قبل ما تعدّل —
+       بدونها تبويب اللابتوب بيضلّ قديم بعد ما سجّلت عالتلفون،
+       وأي تعديل فيه بيرفع نسخة ناقصة. مرة كل 5 دقايق بالكتير. */
+    var lastPull = Date.now();
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState === 'visible' && syncId && Date.now() - lastPull > 300000){
+        lastPull = Date.now();
+        pullCloud();
+      }
+    });
+
     function pullCloud(){
       if(!syncId) return;
       sbCall('wp_get_log', { sid: syncId }).then(function(remote){
