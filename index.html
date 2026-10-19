@@ -753,7 +753,11 @@
       if(cur){ fw.input.value = cur.w || ''; fr.input.value = cur.r || ''; }
 
       function commit(){
-        var w = fw.input.value.trim(), r = fr.input.value.trim();
+        /* طبّع الأرقام العربية فوراً — بتبين بالخانة وبتنحفظ غربية */
+        var rawW = west(fw.input.value), rawR = west(fr.input.value);
+        if(rawW !== fw.input.value) fw.input.value = rawW;
+        if(rawR !== fr.input.value) fr.input.value = rawR;
+        var w = rawW.trim(), r = rawR.trim();
         var a = db[id] || (db[id] = []);
         var idx = -1;
         for(var i = 0; i < a.length; i++) if(a[i] && a[i].d === TD){ idx = i; break; }
@@ -792,12 +796,21 @@
     var th_ = document.getElementById('lgth');
     var MODE = 'ex';   /* 'ex' = حسب التمرين (تقدّم) · 'day' = حسب اليوم */
 
+    /* كيبورد عربي بيكتب ٥٠ و«،» بدل 50 و"," — بنحوّلهن قبل التخزين والقراءة،
+       وإلا السجل بينحفظ بس المقارنات والجولات بتفشل بصمت */
+    function west(s){
+      return String(s == null ? '' : s)
+        .replace(/[٠-٩]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0x0660 + 48); })
+        .replace(/[۰-۹]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0x06F0 + 48); })
+        .replace(/[،٬]/g, ',')
+        .replace(/٫/g, '.');
+    }
     function num(v){
-      var m = String(v == null ? '' : v).match(/\d+(?:\.\d+)?/);
+      var m = west(v).match(/\d+(?:\.\d+)?/);
       return m ? parseFloat(m[0]) : null;
     }
     function sumReps(v){
-      var m = String(v == null ? '' : v).match(/\d+(?:\.\d+)?/g);
+      var m = west(v).match(/\d+(?:\.\d+)?/g);
       if(!m) return null;
       var t = 0;
       for(var i = 0; i < m.length; i++) t += parseFloat(m[i]);
@@ -805,7 +818,7 @@
     }
     function nice(n){ return String(Math.round(n * 10) / 10); }
     function nums(v){
-      var m = String(v == null ? '' : v).match(/\d+(?:\.\d+)?/g);
+      var m = west(v).match(/\d+(?:\.\d+)?/g);
       if(!m) return [];
       return m.map(function(x){ return parseFloat(x); });
     }
