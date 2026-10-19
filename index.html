@@ -636,11 +636,11 @@
     var TD = d0.getFullYear() + '-' + pad(d0.getMonth()+1) + '-' + pad(d0.getDate());
 
     var st = document.getElementById('lgst'), stT;
-    function msg(text){
+    function msg(text, hold){
       if(!st) return;
       st.textContent = text;
       clearTimeout(stT);
-      stT = setTimeout(function(){ st.textContent = ''; }, 2200);
+      stT = setTimeout(function(){ st.textContent = ''; }, hold || 2200);
     }
     function save(){
       if(!storeOK){ msg('⚠ التخزين مش متاح — احفظ نسخة'); return; }
@@ -732,8 +732,8 @@
           }
           pvWord(pvRow('pv-h'), wl + ' × ' + rl);
         } else {
-          if(p.w){ var rw = pvRow(); pvNum(rw, p.w); pvWord(rw, wl); }
-          if(p.r){ var rr = pvRow(); pvNum(rr, p.r); pvWord(rr, rl); }
+          if(p.w){ var rw = pvRow(); pvNum(rw, west(p.w)); pvWord(rw, wl); }
+          if(p.r){ var rr = pvRow(); pvNum(rr, west(p.r)); pvWord(rr, rl); }
         }
         chip.appendChild(pvt);
         var tap = document.createElement('span'); tap.className = 'tapme';
@@ -770,7 +770,7 @@
         if(storeOK){
           var tw = topW(w), bw = bestBefore(id);
           if(tw !== null && bw !== null && tw > bw)
-            msg('🎉 رقم جديد — أثقل من كل مرة قبل (' + nice(bw) + ' كغ)');
+            msg('🎉 رقم جديد — أثقل من كل مرة قبل (' + nice(bw) + ' كغ)', 6000);
           else msg('✓ محفوظ');
         }
       }
