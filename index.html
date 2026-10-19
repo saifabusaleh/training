@@ -665,23 +665,6 @@
       for(var i = 0; i < a.length; i++) if(a[i] && a[i].d === TD) return a[i];
       return null;
     }
-    function label(e, unit, runit){
-      /* أوزان متعدّدة → نعرضها مقرونة بعدّاتها: 50×10 · 55×8 · 55×8 */
-      var ws = nums(e.w), rs = nums(e.r);
-      if(ws.length > 1 && rs.length){
-        var out = [];
-        for(var i = 0; i < rs.length; i++){
-          out.push(nice(ws[i] !== undefined ? ws[i] : ws[ws.length - 1]) + '×' + nice(rs[i]));
-        }
-        /* اللاحقة بتفسّر الأرقام: أي واحد الوزن وأي واحد العدّات */
-        return out.join('  ·  ') + ' (' + unit + '×' + (runit || 'عدّات') + ')';
-      }
-      var parts = [];
-      if(e.w) parts.push(e.w + ' ' + unit);
-      if(e.r) parts.push(e.r + ' ' + (runit || 'عدّات'));
-      return parts.join('  ·  ');
-    }
-
     function field(lab, cls){
       var wrap = document.createElement('span'); wrap.className = 'f';
       var tag  = document.createElement('span'); tag.textContent = lab;
@@ -1030,8 +1013,10 @@
           if(!e || !e.d) return;
           var found = null;
           for(var i = 0; i < cur.length; i++) if(cur[i] && cur[i].d === e.d) found = cur[i];
-          if(found){ found.w = e.w || found.w; found.r = e.r || found.r; }
-          else { cur.push({ d: e.d, w: e.w || '', r: e.r || '' }); added++; }
+          /* طبّع الوارد — نسخة قديمة/سحابة ممكن تحمل أرقام عربية خام */
+          var ew = west(e.w || ''), er = west(e.r || '');
+          if(found){ found.w = ew || found.w; found.r = er || found.r; }
+          else { cur.push({ d: e.d, w: ew, r: er }); added++; }
         });
       });
       return added;
